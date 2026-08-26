@@ -1,0 +1,90 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  username       String    @unique
+  passwordHash   String
+  fullName       String
+  bio            String?   @db.VarChar(500)
+  avatar         String?
+  blogTitle      String?   @default("My Personal Blog")
+  socialTwitter  String?
+  socialGithub   String?
+  socialLinkedin String?
+  socialWebsite  String?
+
+  posts          Post[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([username])
+}
+
+model Post {
+  id                 String        @id @default(uuid())
+  authorId           String
+  author             User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  title              String
+  slug               String
+  contentHtml        String        @db.Text
+  contentJson        Json?
+  excerpt            String?       @db.VarChar(500)
+  coverImage         String?
+  readingTimeMinutes Int           @default(1)
+
+  published          Boolean       @default(false)
+  publishedAt        DateTime?
+  viewCount          Int           @default(0)
+
+  postTags           PostTag[]
+  viewLogs           PostViewLog[]
+
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@unique([authorId, slug])
+  @@index([authorId])
+  @@index([slug])
+  @@index([published, createdAt])
+}
+
+model Tag {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  slug      String    @unique
+  postTags  PostTag[]
+  createdAt DateTime  @default(now())
+
+  @@index([slug])
+}
+
+model PostTag {
+  id     String @id @default(uuid())
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tagId  String
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, tagId])
+  @@index([postId])
+  @@index([tagId])
+}
+
+model PostViewLog {
+  id         String   @id @default(uuid())
+  postId     String
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  readerHash String
+  viewedAt   DateTime @default(now())
+
+  @@index([postId, readerHash, viewedAt])
+  @@index([viewedAt])
+}
