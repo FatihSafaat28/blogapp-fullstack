@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: avianblog_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: avianblog
+      POSTGRES_PASSWORD: avianblog123
+      POSTGRES_DB: avianblog_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - avianblog_pgdata:/var/lib/postgresql/data
+
+volumes:
+  avianblog_pgdata:

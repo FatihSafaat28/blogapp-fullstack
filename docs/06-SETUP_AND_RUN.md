@@ -8,7 +8,7 @@ Dokumen ini menjelaskan langkah-langkah instalasi, konfigurasi database PostgreS
 
 * **Node.js**: Versi `18.x` atau lebih baru (`node -v`).
 * **Package Manager**: `npm` atau `pnpm`.
-* **Database**: **PostgreSQL** berjalan di lokal (port 5432) atau URL database cloud (Supabase / Neon / Render Postgres).
+* **Database**: **PostgreSQL 16** via Docker Compose (Direkomendasikan) atau PostgreSQL lokal di port 5432.
 
 ---
 
@@ -28,7 +28,7 @@ PORT=5000
 NODE_ENV=development
 
 # PostgreSQL Database Connection (Prisma)
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/belajar_pern_blog?schema=public"
+DATABASE_URL="postgresql://avianblog:avianblog123@localhost:5432/avianblog_db?schema=public"
 
 # JWT Security Secrets (Minimum 32 chars in production)
 JWT_ACCESS_SECRET="default-dev-super-secret-access-token-key-min-32-chars"
@@ -47,14 +47,19 @@ VITE_API_BASE_URL="http://localhost:5000/api"
 
 ## 3. 📦 Langkah Instalasi & Database Migration
 
-### Langkah 1: Install Dependencies
+### Langkah 1: Menyalakan Database PostgreSQL (Docker)
 ```bash
-# Di root project (atau masing-masing sub-folder)
-cd backend && npm install
-cd ../frontend && npm install
+# Di root project
+npm run docker:up
 ```
 
-### Langkah 2: Prisma Migration (Setup Skema PostgreSQL)
+### Langkah 2: Install Dependencies
+```bash
+# Di root project
+npm run install:all
+```
+
+### Langkah 3: Prisma Migration (Setup Skema PostgreSQL)
 ```bash
 cd backend
 

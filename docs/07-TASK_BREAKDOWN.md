@@ -41,7 +41,7 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 ---
 
 ### 🗄️ Phase 1: Database & Core Backend Infrastructure
-- [ ] **Task 1.1: Prisma Schema & Migration**
+- [x] **Task 1.1: Prisma Schema & Migration**
   - Buat `backend/prisma/schema.prisma` dengan model: `User`, `Post`, `Tag`, `PostTag`, `PostViewLog`.
   - Tambahkan composite unique constraint `@@unique([authorId, slug])`.
   - Jalankan migrasi database awal `npx prisma migrate dev --name init`.

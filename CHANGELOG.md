@@ -50,13 +50,29 @@ Dokumen ini melacak riwayat perubahan, fitur yang telah diselesaikan, dan rencan
 
 ---
 
-### 🎯 Next Steps:
-- [ ] **Phase 1: Database Setup & Migration**:
-  - [ ] Pastikan PostgreSQL lokal/cloud berjalan dan terhubung dengan file `backend/.env`.
-  - [ ] Jalankan `npx prisma migrate dev --name init`.
-- [ ] **Phase 2: Backend Feature Modules**:
-  - [ ] **Task 2.1**: Auth Module (Register, Login dengan HttpOnly Cookie, Logout, Me).
-  - [ ] **Task 2.2**: Media Upload Module (Multer disk storage & validation).
-  - [ ] **Task 2.3**: User & Profile Settings Module.
-  - [ ] **Task 2.4**: Posts Module (Drafting, Debounced auto-save, Reading time, Publishing, Multi-tenant slug).
-  - [ ] **Task 2.5**: Smart Analytics Module (60m deduplication logic & Dashboard metrics).
+## 📌 [2026-08-26] - Phase 1: Database Setup & Core Backend Infrastructure (In Progress)
+
+### ✅ Completed:
+1. **Task 1.1: Database Infrastructure via Docker Compose & Migration**:
+   - Dibuat `docker-compose.yml` dengan image `postgres:16-alpine`.
+   - Konfigurasi kredensial seragam (`POSTGRES_USER: avianblog`, `POSTGRES_PASSWORD: avianblog123`, `POSTGRES_DB: avianblog_db`, Container: `avianblog_postgres`).
+   - Persistensi volume data `avianblog_pgdata`.
+   - Penambahan skrip npm root: `npm run docker:up`, `npm run docker:down`, `npm run docker:logs`.
+   - Memperbarui `DATABASE_URL` di `.env` dan `.env.example`.
+   - Eksekusi migrasi database `20260826063908_first_migrate` pada `avianblog_db` di container.
+   - Sukses generate Prisma 7 Client.
+   - Dokumentasi [docs/06-SETUP_AND_RUN.md](file:///d:/devs/belajar-pern/docs/06-SETUP_AND_RUN.md) diperbarui.
+
+---
+
+### 🎯 Next Steps (Sisa Phase 1):
+- [ ] **Task 1.2 & 1.3: Core Backend Utilities & AuthGuard**:
+  - [ ] `backend/src/utils/jwt.ts`: Fungsi helper sign & verify Access Token (15m) & Refresh Token (7d).
+  - [ ] `backend/src/middlewares/auth.middleware.ts`: Middleware `authGuard` untuk proteksi rute private via HttpOnly cookie.
+  - [ ] Verifikasi `backend/src/index.ts` & middleware routing.
+- [ ] **Phase 2: Backend Feature Modules (Setelah Phase 1 Selesai)**:
+  - [ ] **Task 2.1**: Auth Module (`/api/auth` - Register, Login, Logout, Me).
+  - [ ] **Task 2.2**: Media Upload Module (`/api/media`).
+  - [ ] **Task 2.3**: User & Profile Settings Module (`/api/users`).
+  - [ ] **Task 2.4**: Posts Module (`/api/posts`).
+  - [ ] **Task 2.5**: Smart Analytics Module (`/api/analytics`).
