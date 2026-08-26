@@ -48,12 +48,17 @@ Dokumen ini mendefinisikan seluruh kontrak endpoint REST API, parameter, skema v
   ```json
   {
     "identifier": "johndoe atau john@example.com",
-    "password": "Password123!"
+    "password": "Password123!",
+    "rememberMe": true
   }
   ```
+* **Validasi (Zod)**:
+  * `identifier`: String non-kosong (bisa email atau username).
+  * `password`: String non-kosong.
+  * `rememberMe`: Boolean opsional (default: `false`).
 * **Response (200 OK)**:
-  * Header `Set-Cookie`: `accessToken=...; HttpOnly; SameSite=Lax; Path=/`
-  * Header `Set-Cookie`: `refreshToken=...; HttpOnly; SameSite=Lax; Path=/api/auth`
+  * Header `Set-Cookie`: `accessToken=...; HttpOnly; SameSite=Lax; Path=/; Max-Age=900` (15 menit)
+  * Header `Set-Cookie`: `refreshToken=...; HttpOnly; SameSite=Lax; Path=/api/auth` (Jika `rememberMe: true` -> `Max-Age=604800` / 7 hari, jika `false` -> Session Cookie yang hilang saat browser ditutup)
   ```json
   {
     "success": true,
@@ -70,12 +75,17 @@ Dokumen ini mendefinisikan seluruh kontrak endpoint REST API, parameter, skema v
   }
   ```
 
-### C. Get Current User (`Me`)
+### C. Refresh Session Token
+* **Endpoint**: `POST /api/auth/refresh`
+* **Access**: Public (Membaca HttpOnly Cookie `refreshToken`)
+* **Response (200 OK)**: Menerbitkan `accessToken` baru (dan Refresh Token baru jika rotation aktif).
+
+### D. Get Current User (`Me`)
 * **Endpoint**: `GET /api/auth/me`
 * **Access**: Private (Auth Cookie)
 * **Response (200 OK)**: Data profil user yang sedang login.
 
-### D. Logout
+### E. Logout
 * **Endpoint**: `POST /api/auth/logout`
 * **Access**: Private
 * **Response (200 OK)**: Menghapus cookie `accessToken` dan `refreshToken`.

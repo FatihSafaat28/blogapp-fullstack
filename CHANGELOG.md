@@ -50,8 +50,8 @@ Dokumen ini melacak riwayat perubahan, fitur yang telah diselesaikan, dan rencan
 
 ---
 
-## 📌 [2026-08-26] - Phase 1: Database Setup & Core Backend Infrastructure (In Progress)
-
+## 📌 [2026-08-26] - Phase 1: Database Setup & Core Backend Infrastructure
+ 
 ### ✅ Completed:
 1. **Task 1.1: Database Infrastructure via Docker Compose & Migration**:
    - Dibuat `docker-compose.yml` dengan image `postgres:16-alpine`.
@@ -61,18 +61,24 @@ Dokumen ini melacak riwayat perubahan, fitur yang telah diselesaikan, dan rencan
    - Memperbarui `DATABASE_URL` di `.env` dan `.env.example`.
    - Eksekusi migrasi database `20260826063908_first_migrate` pada `avianblog_db` di container.
    - Sukses generate Prisma 7 Client.
-   - Dokumentasi [docs/06-SETUP_AND_RUN.md](file:///d:/devs/belajar-pern/docs/06-SETUP_AND_RUN.md) diperbarui.
+2. **Task 1.2: Global Express Server & Middlewares**:
+   - `backend/src/index.ts`: Inisialisasi Express server dengan Helmet, CORS credentials, Cookie-Parser, express.json, static uploads `/uploads`, dan endpoint `/api/health`.
+   - `backend/src/config/prisma.ts`: Singleton PrismaClient dengan adapter native PostgreSQL `pg`.
+   - `backend/src/middlewares/error.middleware.ts`: Global error handling, format error Zod otomatis, `AppError` class, dan 404 handler.
+3. **Task 1.3: Authentication Utilities & AuthGuard**:
+   - `backend/src/utils/jwt.ts`: Helper `generateAccessToken` (15m), `generateRefreshToken` (7d/custom), `verifyAccessToken`, dan `verifyRefreshToken`.
+   - `backend/src/types/express.d.ts`: Deklarasi tipe global untuk `req.user` (`AuthUser`).
+   - `backend/src/middlewares/auth.middleware.ts`: Middleware `authGuard` (wajib login) dan `optionalAuthGuard` (opsional untuk analytics view tracking).
+4. **Verifikasi Build**:
+   - Kompilasi TypeScript `npm --prefix backend run build` lulus 100% dengan 0 error.
+   - Semua file mematuhi aturan ketat `< 300 LOC` (rata-rata `< 70 LOC`).
 
 ---
 
-### 🎯 Next Steps (Sisa Phase 1):
-- [ ] **Task 1.2 & 1.3: Core Backend Utilities & AuthGuard**:
-  - [ ] `backend/src/utils/jwt.ts`: Fungsi helper sign & verify Access Token (15m) & Refresh Token (7d).
-  - [ ] `backend/src/middlewares/auth.middleware.ts`: Middleware `authGuard` untuk proteksi rute private via HttpOnly cookie.
-  - [ ] Verifikasi `backend/src/index.ts` & middleware routing.
-- [ ] **Phase 2: Backend Feature Modules (Setelah Phase 1 Selesai)**:
-  - [ ] **Task 2.1**: Auth Module (`/api/auth` - Register, Login, Logout, Me).
-  - [ ] **Task 2.2**: Media Upload Module (`/api/media`).
-  - [ ] **Task 2.3**: User & Profile Settings Module (`/api/users`).
-  - [ ] **Task 2.4**: Posts Module (`/api/posts`).
-  - [ ] **Task 2.5**: Smart Analytics Module (`/api/analytics`).
+### 🎯 Next Steps (Phase 2: Backend Feature Modules):
+- [ ] **Task 2.1**: Auth Module (`/api/auth` - Register, Login dengan Remember Me, Refresh Token, Logout, Me).
+- [ ] **Task 2.2**: Media Upload Module (`/api/media` - Multer image upload maks 5MB).
+- [ ] **Task 2.3**: User & Profile Settings Module (`/api/users` - Update profil, bio, custom blog title).
+- [ ] **Task 2.4**: Posts Module (`/api/posts` - CRUD, Tiptap JSON/HTML, reading time, auto-slug, publish toggle).
+- [ ] **Task 2.5**: Smart Analytics Module (`/api/analytics` - 60-min deduplication view counter, dashboard chart data).
+

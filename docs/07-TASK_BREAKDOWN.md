@@ -45,13 +45,13 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
   - Buat `backend/prisma/schema.prisma` dengan model: `User`, `Post`, `Tag`, `PostTag`, `PostViewLog`.
   - Tambahkan composite unique constraint `@@unique([authorId, slug])`.
   - Jalankan migrasi database awal `npx prisma migrate dev --name init`.
-- [ ] **Task 1.2: Global Express Server & Middlewares**
+- [x] **Task 1.2: Global Express Server & Middlewares**
   - `backend/src/index.ts`: Entry point Express.
   - `backend/src/config/prisma.ts`: Inisialisasi singleton PrismaClient.
   - `backend/src/middlewares/error.middleware.ts`: Global error handler & AppError class.
   - `backend/src/middlewares/cors.middleware.ts`: CORS with `credentials: true`.
   - Static file serve untuk folder `backend/uploads/`.
-- [ ] **Task 1.3: Authentication Utilities & AuthGuard**
+- [x] **Task 1.3: Authentication Utilities & AuthGuard**
   - `backend/src/utils/jwt.ts`: Fungsi sign & verify Access Token (15m) & Refresh Token (7d).
   - `backend/src/middlewares/auth.middleware.ts`: Middleware `authGuard` untuk memproteksi private routes via HttpOnly cookie.
 
@@ -59,10 +59,10 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 
 ### ⚙️ Phase 2: Backend Feature Modules
 - [ ] **Task 2.1: Auth Module (`/api/auth`)**
-  - `auth.schema.ts`: Validasi Zod register & login.
-  - `auth.service.ts`: Logika hash password bcrypt, cek email/username unik, token generation.
-  - `auth.controller.ts`: Set/clear HttpOnly cookies, return user session.
-  - `auth.routes.ts`: `POST /register`, `POST /login`, `POST /logout`, `GET /me`.
+  - `auth.schema.ts`: Validasi Zod register, login (support `rememberMe: boolean`), dan token refresh.
+  - `auth.service.ts`: Logika hash password bcrypt, cek email/username unik, token generation (Access 15m & Refresh 7d / Session).
+  - `auth.controller.ts`: Set/clear HttpOnly cookies dengan kalkulasi `maxAge` berbasis `rememberMe`, return user session.
+  - `auth.routes.ts`: `POST /register`, `POST /login`, `POST /refresh`, `POST /logout`, `GET /me`.
 - [ ] **Task 2.2: Media Upload Module (`/api/media`)**
   - `upload.middleware.ts`: Multer disk storage, filename sanitization, image MIME type validation (maks 5MB).
   - `media.routes.ts`: `POST /upload` &rarr; Return URL `/uploads/{filename}`.
