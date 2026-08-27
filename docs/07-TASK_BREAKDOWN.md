@@ -61,37 +61,30 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 
 ### ⚙️ Phase 2: Backend Feature Modules
 
-- [ ] **Task 2.1: Auth Module (`/api/auth`)**
+- [x] **Task 2.1: Auth Module (`/api/auth`)**
   - `auth.schema.ts`: Validasi Zod register, login (support `rememberMe: boolean`), dan token refresh.
-  - `auth.service.ts`: Logika hash password bcrypt, cek email/username unik, token generation (Access 15m & Refresh 7d / Session).
+  - `auth.service.ts`: Logika hash password bcrypt, cek email/username unik, token generation (Access 15m & Refresh 7d / Session 30d).
   - `auth.controller.ts`: Set/clear HttpOnly cookies dengan kalkulasi `maxAge` berbasis `rememberMe`, return user session.
-  - `auth.routes.ts`: `POST /register`, `POST /login`, `POST /refresh`, `POST /logout`, `GET /me`.
-- [ ] **Task 2.2: Media Upload Module (`/api/media`)**
+  - `auth.routes.ts`: `POST /register`, `POST /login`, `POST /refresh-token`, `POST /logout`, `GET /me`.
+- [x] **Task 2.2: Media Upload Module (`/api/media`)**
   - `upload.middleware.ts`: Multer memory storage, MIME type validation (JPG, PNG, WEBP, GIF, maks 5MB).
   - `media.service.ts`: Konversi otomatis ke format **WebP** menggunakan library `sharp` (max-width 1600px, quality 80), sanitasi penamaan file unik, dan penyimpanan ke `backend/uploads/`.
   - `media.controller.ts` & `media.routes.ts`: `POST /api/media/upload` &rarr; Return URL `/uploads/{filename}.webp`.
-- [ ] **Task 2.3: User & Settings Module (`/api/users`)**
-  - `users.service.ts`: Update profile (avatar, bio, blogTitle, social links).
-  - `users.controller.ts` & `users.routes.ts`: `PUT /profile`, `GET /public/:username`.
-- [ ] **Task 2.4: Posts Module (`/api/posts`)**
+- [x] **Task 2.3: User & Settings Module (`/api/users`)**
+  - `users.schema.ts`: Validasi Zod update profil dan parameter username publik.
+  - `users.service.ts`: Query profil publik kreator (`/@:username`), update profil & kustomisasi judul blog, kalkulasi statistik postingan.
+  - `users.controller.ts` & `users.routes.ts`: `GET /public/:username`, `PATCH /profile`, `GET /me/stats`.
+- [x] **Task 2.4: Posts Module (`/api/posts`)**
   - `posts.schema.ts`: Validasi Zod ketat (panjang judul 3–200 char, excerpt maks 500 char, tags array, query tab enum `trending` | `latest` | `for-you`).
-  - `posts.service.ts`:
-    - Rate limit: Maksimal 10 pembuatan post per 15 menit via `express-rate-limit`.
-    - Sanitasi konten HTML sebelum disimpan ke database (anti-XSS).
-    - Auto-generate slug unik per author (`@@unique([authorId, slug])`).
-    - Hitung otomatis `readingTimeMinutes` (`wordCount / 200`).
-    - Auto-extract ringkasan `excerpt` dari paragraf pertama.
-    - Query feed explore publik dengan 3 mode sorting (`trending` score decay, `for-you` tag & creator affinity, `latest`).
-    - Query dashboard post list (filter `all`, `published`, `draft`).
-    - Create draft, debounced auto-save update, toggle publish/unpublish, delete.
-    - Query public author articles (`/@:username`) dan single article (`/@:username/:slug`).
-  - `posts.controller.ts` & `posts.routes.ts`.
-- [ ] **Task 2.5: Smart Analytics Module (`/api/analytics`)**
-  - `analytics.service.ts`:
-    - Logika deduplikasi 60 menit: Cek `PostViewLog` berdasarkan hash `(session + IP + UA)` < 60 min.
-    - Increment `post.viewCount` hanya jika unik.
-    - Agregasi dashboard: total views, grafik 7/30 hari, daftar top 5 artikel.
-  - `analytics.controller.ts` & `analytics.routes.ts`.
+  - `posts.helper.ts`: Sanitasi HTML anti-XSS (`sanitize-html`), kalkulasi `readingTimeMinutes`, ekstraksi `excerpt`, generator slug unik.
+  - `posts.service.ts`: Create draft, auto-save update, toggle publish/unpublish, delete, dashboard post list.
+  - `posts-feed.service.ts`: 3 tab feed explore (`trending` score decay, `for-you`, `latest`), author articles list, single article.
+  - `posts.controller.ts` & `posts.routes.ts`: Rate limit 10 post / 15m, routing public & private.
+- [x] **Task 2.5: Smart Analytics Module (`/api/analytics`)**
+  - `analytics.schema.ts` & `analytics.helper.ts`: Validasi UUID `postId`, hash SHA-256 pembaca anonim.
+  - `analytics.service.ts`: Deduplikasi 60 menit via `PostViewLog`, atomic increment `viewCount`, agregasi grafik 7/30 hari dan top 5 artikel.
+  - `analytics.controller.ts` & `analytics.routes.ts`: `POST /views/:postId`, `GET /dashboard`.
+  - `openapi.ts` & Swagger UI: Live studio di `/docs/`.
 
 ---
 
@@ -99,19 +92,20 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 
 - [ ] **Task 3.1: CSS Design Tokens & Typography**
   - `frontend/src/styles/variables.css`: Palette warna (Light & Dark), Glassmorphism, Radii, Shadows, Spacing.
-  - `frontend/src/styles/typography.css`: Font _Outfit_ & _Inter_, line heights, heading scales.
+  - `frontend/src/styles/typography.css`: Font _Outfit_ / _Plus Jakarta Sans_ & _Inter_, line heights, heading scales.
   - `frontend/src/styles/reset.css`: Modern CSS reset.
-- [ ] **Task 3.2: API Client & Query Client Setup**
-  - `frontend/src/shared/api/apiClient.ts`: Fetch/Axios instance dengan `credentials: 'include'` dan error handling.
-  - `frontend/src/app/providers.tsx`: TanStack QueryClientProvider, ToastProvider.
-- [ ] **Task 3.3: Shared UI Atoms (< 150 LOC)**
+- [ ] **Task 3.2: API Client, Query Client & Auth Store**
+  - `frontend/src/shared/api/apiClient.ts`: Axios instance dengan `withCredentials: true`, interceptors auto refresh token saat 401.
+  - `frontend/src/app/providers.tsx`: TanStack QueryClientProvider, Toast/Alert Provider.
+  - `frontend/src/features/auth/stores/authStore.ts`: Zustand state management (`user`, `isAuthenticated`, `login`, `logout`, `checkAuth`).
+- [ ] **Task 3.3: Shared UI Atoms (< 150 LOC per file)**
   - `Button.tsx`, `Input.tsx`, `Badge.tsx`, `Card.tsx`, `Modal.tsx`, `Dropdown.tsx`, `Spinner.tsx`, `Toast.tsx`.
 - [ ] **Task 3.4: Layout Shells**
   - `Navbar.tsx`: Navbar publik global (Logo, Explore, Search, Login/Register / Avatar User).
   - `DashboardLayout.tsx`: Ghost-style layout dengan sidebar tetap dan top bar.
   - `PublicLayout.tsx`: Layout container untuk halaman author dan pembaca.
 - [ ] **Task 3.5: App Router & Route Protection**
-  - `frontend/src/app/router.tsx`: React Router v6 setup dengan ProtectedRoute guard.
+  - `frontend/src/app/router.tsx`: React Router v6 setup dengan `ProtectedRoute` dan `PublicOnlyRoute`.
 
 ---
 
