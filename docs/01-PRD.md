@@ -61,8 +61,9 @@ Platform menggunakan format routing modern untuk mencegah bentrok dan memaksimal
   * Heading 1 (`H1`), Heading 2 (`H2`), Heading 3 (`H3`).
   * Formatting: **Bold**, *Italic*, ~~Strikethrough~~, `Inline Code`, Blockquote, Divider / Horizontal Rule.
   * List: Bullet list (`•`), Numbered list (`1. 2. 3.`), Task list / Checkbox.
-* **Image Handling**:
+* **Image Handling & WebP Optimization**:
   * Tombol upload gambar pada toolbar + dukungan Paste (Ctrl+V) & Drag-and-Drop.
+  * Server otomatis mengonversi gambar (JPG, PNG) menjadi format **WebP teroptimasi** (max-width 1600px, quality 80) via `sharp` untuk kecepatan muat artikel maksimal.
   * Penempatan gambar langsung di posisi kursor aktif.
 * **Ghost-style Sliding Settings Drawer**:
   * Drawer samping yang bisa dibuka/tutup saat menulis:
@@ -87,7 +88,31 @@ Platform menggunakan format routing modern untuk mencegah bentrok dan memaksimal
   * Konten artikel dengan styling tipografi HTML yang rapi (headings, blockquote bergaris samping, code block dengan kontras, gambar responsif).
   * Bagian footer: Author biography card dan tombol share artikel (Copy Link, Twitter, WhatsApp).
 
-### F. Modul Smart View Analytics (1 View / 60 Menit)
+### F. Modul Landing Page & Explore Discovery Hub (`/` & `/explore`)
+* **Landing Page (`/`)**:
+  * Hero Section: Tagline platform, sub-heading inspiratif, dan CTA *"Mulai Menulis Gratis"* / *"Telusuri Cerita"*.
+  * Featured Bento Grid: Sorotan artikel utama (*Featured*) & trending minggu ini.
+  * Recent Stories Feed: Grid responsif kartu artikel terbaru dari berbagai kreator.
+* **Explore Discovery Hub (`/explore`)**:
+  * Layout 2 Kolom: Feed Artikel Utama (70%) + Discovery Sidebar (30%).
+  * Pencarian Real-Time (judul, excerpt, author) + Multi-tag selector pills.
+  * **3 Tab Feed Cerdas**:
+    1. **🔥 Tab Trending**: Berdasarkan skor lonjakan pembaca & faktor peluruhan waktu ($Score = \frac{Views}{(Hours + 2)^{1.5}}$).
+    2. **🎯 Tab Untuk Anda (For You)**: Personalisasi berbasis riwayat minat tag (*tag affinity*) dan kreator yang sering dikunjungi (*creator affinity*).
+    3. **⚡ Tab Terbaru (Latest)**: Terurut murni dari detik terakhir dipublikasikan (`publishedAt desc`).
+  * Discovery Sidebar: Rekomendasi penulis teraktif (*Top Writers*) dengan link `/@:username`, trending topics cloud, dan filter durasi baca (*Quick Reads* < 4 min vs *Deep Dives* > 8 min).
+
+### G. Modul Keamanan Postingan & Anti-Spam (Post Security)
+* **Rate Limiting Pembuatan Post**:
+  * Menggunakan `express-rate-limit`: Maksimal **10 pembuatan post baru per 15 menit** per akun/IP (mencegah bot spamming).
+* **Validasi Zod Ketat**:
+  * Panjang judul (3 - 200 karakter), batas excerpt (maks 500 karakter), validasi array tag.
+* **Debounced Auto-Save**:
+  * Editor Tiptap melakukan auto-save dengan debounce 1.5 - 2 detik ke `PUT /api/posts/:id` (mengupdate draft yang sama, bukan membuat duplikat).
+* **Sanitasi Konten HTML**:
+  * Sanitasi menyeluruh konten HTML artikel menggunakan `DOMPurify` / `sanitize-html` untuk membersihkan tag berbahaya (`<script>`, `onerror=`, `iframe` ilegal) demi mencegah celah XSS.
+
+### H. Modul Smart View Analytics (1 View / 60 Menit)
 * **Mekanisme Pencatatan**:
   * Saat artikel dibuka di `/@:username/:postSlug`, frontend memicu pencatatan view.
   * Backend membuat hash dari `(Reader Cookie / Session ID + IP Address + User-Agent)`.
@@ -108,8 +133,23 @@ Platform menggunakan format routing modern untuk mencegah bentrok dan memaksimal
   * Password di-hash menggunakan `bcryptjs` (salt rounds 10).
   * Perlindungan XSS dengan pembersihan input dan sanitasi HTML.
   * Proteksi CSRF & Cookie HttpOnly `SameSite: Lax` / `Strict`.
-  * Rate limiting pada endpoint sensitif (Auth & Image Upload).
+  * Rate limiting pada endpoint sensitif (Auth, Image Upload, dan Post Creation).
 * **Maintainability & Clean Code**:
   * File size limit ketat: **Maksimal 300 lines of code (LOC)** per file.
   * Strict separation: Model, View, Presenter (FE) dan Controller, Service, Route (BE).
 * **Responsive Design**: Tampilan mobile-first, tablet, dan desktop yang mulus.
+
+---
+
+## 6. 🚀 Roadmap Masa Depan (Future Enhancements - Post MVP)
+
+Fitur-fitur berikut direncanakan untuk tahap pengembangan berikutnya setelah sistem publikasi inti dan deployment VPS berjalan stabil:
+
+1. **❤️ Sistem Apresiasi (Clap / Like)**:
+   * Fitur tepuk tangan (*claps*) ala Medium (pembaca bisa memberikan 1-50 tepukan per artikel).
+2. **💬 Sistem Komentar & Diskusi (Threaded Comments)**:
+   * Kolom komentar di bawah artikel dengan balasan bertingkat (*nested replies*) dan moderasi oleh author.
+3. **🔔 Fitur Follow & Email Subscribe**:
+   * Pembaca dapat mengikuti kreator favorit (*Follow Author*) dan menerima notifikasi artikel baru.
+4. **🔖 Bookmarks & Reading List**:
+   * Menyimpan artikel favorit ke daftar bacaan pribadi (*Save for later*).

@@ -96,49 +96,89 @@ Dokumen ini mendefinisikan seluruh kontrak endpoint REST API, parameter, skema v
 
 ### A. Dapatkan Feed Artikel Publik (Explore / Landing Page)
 * **Endpoint**: `GET /api/posts/public`
-* **Access**: Public
-* **Query Params**: `page` (default 1), `limit` (default 10), `tag`, `search`
-* **Response (200 OK)**: Array postingan berstatus `published: true` beserta author info.
+* **Access**: Public (`optionalAuthGuard` untuk personalisasi `for-you`)
+* **Query Params**:
+  * `tab`: `trending` (default - skor popularitas & waktu), `latest` (kronologis terbaru), `for-you` (personalisasi minat tag & kreator).
+  * `tag`: Filter spesifik berdasarkan nama tag/topik (misal: `tech`, `design`).
+  * `search`: Kata kunci pencarian pada judul, excerpt, atau author.
+  * `page`: Nomor halaman (default: `1`).
+  * `limit`: Jumlah artikel per halaman (default: `10`, maks: `50`).
+* **Response (200 OK)**:
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "id": "uuid",
+        "title": "Membangun PERN Stack Modern",
+        "slug": "membangun-pern-stack-modern",
+        "excerpt": "Panduan lengkap...",
+        "coverImage": "/uploads/img-1724581234-a1b2c3.webp",
+        "readingTimeMinutes": 5,
+        "viewCount": 142,
+        "publishedAt": "2026-08-26T10:00:00.000Z",
+        "author": {
+          "id": "uuid",
+          "fullName": "Fatih Safaat",
+          "username": "fatih",
+          "avatar": "/uploads/avatar.webp"
+        },
+        "tags": [{ "id": "uuid", "name": "Web Dev", "slug": "web-dev" }]
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "totalPosts": 48,
+      "totalPages": 5
+    }
+  }
+  ```
 
 ### B. Dapatkan Artikel Milik Spesifik Author (`/@:username`)
 * **Endpoint**: `GET /api/posts/public/author/:username`
 * **Access**: Public
-* **Response (200 OK)**: Profil author dan daftar artikel terbitannya.
+* **Query Params**: `page`, `limit`, `tag`, `search`
+* **Response (200 OK)**: Profil publik author dan daftar artikel terbitannya.
 
 ### C. Dapatkan Detail Artikel Pembaca (`/@:username/:slug`)
 * **Endpoint**: `GET /api/posts/public/author/:username/:slug`
 * **Access**: Public
-* **Response (200 OK)**: Detail artikel lengkap (HTML content, reading time, author card, tags).
+* **Response (200 OK)**: Detail artikel lengkap (HTML content tersanitasi, reading time, author card, tags).
 
 ### D. Dapatkan Daftar Post di Dashboard Creator
 * **Endpoint**: `GET /api/posts/dashboard`
-* **Access**: Private (Author)
-* **Query Params**: `status` (`all` | `published` | `draft`), `search`
+* **Access**: Private (`authGuard`)
+* **Query Params**: `status` (`all` | `published` | `draft`), `search`, `page`, `limit`
 * **Response (200 OK)**: Daftar artikel milik user yang sedang login beserta `viewCount` dan `published` status.
 
 ### E. Buat Draf Baru (Create Draft)
 * **Endpoint**: `POST /api/posts/draft`
-* **Access**: Private (Author)
-* **Request Body**:
-  ```json
-  {
-    "title": "Draft Tanpa Judul"
-  }
-  ```
-* **Response (201 Created)**: Mengembalikan `id` dan objek draft baru untuk diarahkan ke editor studio.
+* **Access**: Private (`authGuard`)
+* **Security & Anti-Spam**:
+  * **Rate Limit**: Maksimal **10 pembuatan draf per 15 menit** per akun/IP.
+  * **Validasi Zod**: `title` opsional saat draf (default: *"Draf Tanpa Judul"*).
+* **Request Body**: `{ "title": "Draf Judul Baru" }`
+* **Response (201 Created)**: Mengembalikan objek draf baru dengan `id` unik.
 
 ### F. Auto-Save Postingan (Debounced)
 * **Endpoint**: `PUT /api/posts/:id/auto-save`
-* **Access**: Private (Owner Post)
+* **Access**: Private (`authGuard` + Owner Verification)
+* **Security & Anti-Spam**:
+  * **Validasi Zod Ketat**:
+    * `title`: String min 3, maks 200 karakter.
+    * `excerpt`: String maks 500 karakter.
+    * `tags`: Array of string maks 5 tag, per tag maks 30 karakter.
+  * **Sanitasi HTML**: Server otomatis membersihkan `contentHtml` dari skrip berbahaya via sanitasi HTML sebelum disimpan ke PostgreSQL.
 * **Request Body**:
   ```json
   {
     "title": "Tips Belajar React Modern",
     "slug": "tips-belajar-react-modern",
-    "contentHtml": "<p>Isi artikel...</p>",
-    "contentJson": { "type": "doc", "content": [...] },
+    "contentHtml": "<p>Isi artikel tersanitasi...</p>",
+    "contentJson": { "type": "doc", "content": [] },
     "excerpt": "Ringkasan artikel singkat...",
-    "coverImage": "/uploads/image.webp",
+    "coverImage": "/uploads/img-1724581234-a1b2c3.webp",
     "tags": ["react", "frontend", "tips"]
   }
   ```
@@ -146,13 +186,13 @@ Dokumen ini mendefinisikan seluruh kontrak endpoint REST API, parameter, skema v
 
 ### G. Toggle Publish / Unpublish Post
 * **Endpoint**: `PATCH /api/posts/:id/publish`
-* **Access**: Private (Owner Post)
+* **Access**: Private (`authGuard` + Owner Verification)
 * **Request Body**: `{ "published": true }` atau `{ "published": false }`
-* **Response (200 OK)**: Objek post dengan status terbaru.
+* **Response (200 OK)**: Objek post dengan status `published` dan `publishedAt` terbaru.
 
 ### H. Hapus Postingan
 * **Endpoint**: `DELETE /api/posts/:id`
-* **Access**: Private (Owner Post)
+* **Access**: Private (`authGuard` + Owner Verification)
 * **Response (200 OK)**: `{ "success": true, "message": "Postingan berhasil dihapus" }`
 
 ---
@@ -195,15 +235,20 @@ Dokumen ini mendefinisikan seluruh kontrak endpoint REST API, parameter, skema v
 
 ### A. Upload Gambar (Artikel / Avatar / Cover)
 * **Endpoint**: `POST /api/media/upload`
-* **Access**: Private (Multipart Form Data: `file`)
-* **Validasi**: Mime types (`image/jpeg`, `image/png`, `image/webp`, `image/gif`), maks 5MB.
+* **Access**: Private (`authGuard`, Multipart Form Data: `file`)
+* **Validasi**: Mime types (`image/jpeg`, `image/png`, `image/webp`, `image/gif`), batas ukuran maksimal 5MB.
+* **Auto-Conversion & Optimization**:
+  * Menggunakan library **`sharp`** untuk mengonversi gambar (JPG, PNG) menjadi format **WebP** secara otomatis.
+  * Optimasi dimensi: *Max width* 1600px (menjaga rasio aspek), *quality* 80.
+  * File GIF tetap dipertahankan formatnya jika mengandung animasi.
+  * Hasil file disimpan di direktori `backend/uploads/` dengan penamaan unik `img-[timestamp]-[random].webp`.
 * **Response (200 OK)**:
   ```json
   {
     "success": true,
     "data": {
-      "url": "/uploads/img-1724581234.webp",
-      "filename": "img-1724581234.webp"
+      "url": "/uploads/img-1724581234-a1b2c3.webp",
+      "filename": "img-1724581234-a1b2c3.webp"
     }
   }
   ```

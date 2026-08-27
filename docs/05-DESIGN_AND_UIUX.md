@@ -94,10 +94,37 @@ Semua styling menggunakan **Vanilla CSS Modules** dengan sistem token terpusat:
 ## 3. 📐 Layout Breakdown
 
 ### A. Dashboard Creator Studio (Ghost Style)
-* **Sidebar**: Lebar tetap ~240px dengan ikon navigasi (Lucide Icons: Posts, Analytics, Settings, Visit Blog).
-* **Top Header**: Breadcrumbs, indikator auto-save ("Saved" badge warna hijau), dan tombol aksi utama.
-* **Editor Space**: Teks judul berukuran besar (`h1`), Tiptap editing body luas tanpa border yang mengganggu, floating/sticky format toolbar.
-* **Sliding Settings Drawer**: Slide-in dari sisi kanan layar (lebar ~360px) untuk cover image, custom slug, tags, excerpt, dan publish toggle.
+```
+┌─────────────────┬──────────────────────────────────────────────────────────────────────┐
+│ [Logo] Avian    │ 🔍 [ Cari artikel di draf / terbit... ]        [+ Write New Post ➔]  │
+├─────────────────┼──────────────────────────────────────────────────────────────────────┤
+│ 👤 Fatih Blog   │ 📝 ARTIKEL SAYA                                                      │
+│    @fatih       │                                                                      │
+│                 │ [ Semua (14) ]   [ Terbit / Published (9) ]   [ Draf / Drafts (5) ]  │
+│ ─────────────── │ ───────────────────────────────────────────────────────────────────  │
+│ 📝 Posts        │                                                                      │
+│ 📈 Analytics    │ ┌──────────────────────────────────────────────────────────────────┐ │
+│ ⚙️ Settings     │ │ 🌟 Memahami Driver Adapter di Prisma 7                           │ │
+│                 │ │    🏷️ Web Dev · ⏱️ 5 min read · 👁️ 1,420 views                    │ │
+│ ─────────────── │ │    Terbit: 26 Agu 2026                 [ 🟢 PUBLISHED ]  [ ••• ] │ │
+│ 🌐 Jelajahi     │ ├──────────────────────────────────────────────────────────────────┤ │
+│    Artikel (↗)  │ │ 📝 Catatan Arsitektur Multi-User PERN                            │ │
+│ 🌐 Kunjungi     │ │    🏷️ Architecture · ⏱️ 3 min read · 👁️ 0 views                 │ │
+│    Blog Saya ↗  │ │    Terakhir diedit: 2 menit yang lalu  [ ⚪ DRAFT ]      [ ••• ] │ │
+│ ─────────────── │ └──────────────────────────────────────────────────────────────────┘ │
+│ 🚪 Logout       │                                                                      │
+└─────────────────┴──────────────────────────────────────────────────────────────────────┘
+```
+* **Sidebar**: Lebar tetap ~240px dengan ikon navigasi:
+  * 📝 **Posts** (`/dashboard/posts`) &mdash; Kelola draf dan artikel terbit.
+  * 📈 **Analytics** (`/dashboard/analytics`) &mdash; Pantau grafik pembaca.
+  * ⚙️ **Settings** (`/dashboard/settings`) &mdash; Profil dan kustomisasi judul blog.
+  * 🌐 **Jelajahi Artikel (`/explore`)** &mdash; Pintasan cepat untuk membaca artikel kreator lain di feed explore.
+  * 🌐 **Kunjungi Blog Saya (`/@:username`)** &mdash; Membuka personal blog publik di tab baru.
+  * 🚪 **Logout** &mdash; Keluar dari akun dengan aman.
+* **Top Header**: Search input artikel dashboard, dan tombol aksi utama **`[+ Write New Post]`**.
+* **Editor Space**: Teks judul besar (`h1`), Tiptap editing body luas tanpa border mengganggu, floating/sticky format toolbar.
+* **Sliding Settings Drawer**: Slide-in dari sisi kanan layar (lebar ~360px) untuk cover image WebP, custom slug, tags, excerpt, dan publish toggle.
 
 ### B. Personal Blog Landing Page (Substack Style `/@:username`)
 * **Hero Container**:
@@ -116,3 +143,17 @@ Semua styling menggunakan **Vanilla CSS Modules** dengan sistem token terpusat:
   * Blockquote bergaris aksen vertikal di kiri dengan background lembut.
   * Gambar di dalam artikel memiliki border radius `10px` dan shadow halus.
   * Code blocks dengan syntax styling kontras dan tombol *Copy Code*.
+
+### D. Landing Page Layout (`/`)
+* **Hero Banner**: Menyambut pengunjung dengan tagline percaya diri, background gradient halus, dan dua tombol CTA utama (*Start Writing* & *Explore Stories*).
+* **Featured Bento Grid**: Menampilkan 1 artikel sorotan utama dengan cover WebP lebar + 2 artikel populer minggu ini di sisi kanan.
+* **Global Story Grid**: Responsive 3-kolom grid (desktop) / 1-kolom (mobile) untuk artikel pilihan lintas kreator.
+
+### E. Explore Discovery Hub Layout (`/explore`)
+* **Discovery Header**: Search bar sentral dengan shortcut keyboard + Tab Filter Cerdas (*Trending*, *For You*, *Latest*) + Baris Tag Pills yang dapat di-scroll horizontal.
+* **Split Layout 2-Kolom**:
+  * **Kolom Kiri (70%)**: Feed artikel terkurasi dengan kartu artikel komprehensif (author avatar, badge tag, excerpt 2 baris, waktu baca, tanggal rilis, view counter, dan cover thumbnail).
+  * **Kolom Kanan / Sidebar (30%)**:
+    * Widget *Top Writers to Follow* (avatar, nama, bio, tombol `Kunjungi Blog ➔`).
+    * Widget *Trending Topics Cloud* (#tag dengan counter artikel).
+    * Filter Durasi Baca (*Quick Reads* < 4 min vs *Deep Dives* > 8 min).

@@ -27,6 +27,7 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 ## 📌 Rincian Tugas Granular
 
 ### 🏗️ Phase 0: Project Setup & Monorepo Foundation
+
 - [x] **Task 0.1: Root Workspace Setup**
   - Buat `package.json` di root dengan dependency `concurrently`.
   - Konfigurasi `.gitignore` untuk `node_modules`, `.env`, `dist`, `uploads/`.
@@ -41,6 +42,7 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 ---
 
 ### 🗄️ Phase 1: Database & Core Backend Infrastructure
+
 - [x] **Task 1.1: Prisma Schema & Migration**
   - Buat `backend/prisma/schema.prisma` dengan model: `User`, `Post`, `Tag`, `PostTag`, `PostViewLog`.
   - Tambahkan composite unique constraint `@@unique([authorId, slug])`.
@@ -58,26 +60,32 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 ---
 
 ### ⚙️ Phase 2: Backend Feature Modules
+
 - [ ] **Task 2.1: Auth Module (`/api/auth`)**
   - `auth.schema.ts`: Validasi Zod register, login (support `rememberMe: boolean`), dan token refresh.
   - `auth.service.ts`: Logika hash password bcrypt, cek email/username unik, token generation (Access 15m & Refresh 7d / Session).
   - `auth.controller.ts`: Set/clear HttpOnly cookies dengan kalkulasi `maxAge` berbasis `rememberMe`, return user session.
   - `auth.routes.ts`: `POST /register`, `POST /login`, `POST /refresh`, `POST /logout`, `GET /me`.
 - [ ] **Task 2.2: Media Upload Module (`/api/media`)**
-  - `upload.middleware.ts`: Multer disk storage, filename sanitization, image MIME type validation (maks 5MB).
-  - `media.routes.ts`: `POST /upload` &rarr; Return URL `/uploads/{filename}`.
+  - `upload.middleware.ts`: Multer memory storage, MIME type validation (JPG, PNG, WEBP, GIF, maks 5MB).
+  - `media.service.ts`: Konversi otomatis ke format **WebP** menggunakan library `sharp` (max-width 1600px, quality 80), sanitasi penamaan file unik, dan penyimpanan ke `backend/uploads/`.
+  - `media.controller.ts` & `media.routes.ts`: `POST /api/media/upload` &rarr; Return URL `/uploads/{filename}.webp`.
 - [ ] **Task 2.3: User & Settings Module (`/api/users`)**
   - `users.service.ts`: Update profile (avatar, bio, blogTitle, social links).
   - `users.controller.ts` & `users.routes.ts`: `PUT /profile`, `GET /public/:username`.
 - [ ] **Task 2.4: Posts Module (`/api/posts`)**
+  - `posts.schema.ts`: Validasi Zod ketat (panjang judul 3–200 char, excerpt maks 500 char, tags array, query tab enum `trending` | `latest` | `for-you`).
   - `posts.service.ts`:
-    - Auto-generate slug unik per author.
+    - Rate limit: Maksimal 10 pembuatan post per 15 menit via `express-rate-limit`.
+    - Sanitasi konten HTML sebelum disimpan ke database (anti-XSS).
+    - Auto-generate slug unik per author (`@@unique([authorId, slug])`).
     - Hitung otomatis `readingTimeMinutes` (`wordCount / 200`).
     - Auto-extract ringkasan `excerpt` dari paragraf pertama.
+    - Query feed explore publik dengan 3 mode sorting (`trending` score decay, `for-you` tag & creator affinity, `latest`).
     - Query dashboard post list (filter `all`, `published`, `draft`).
-    - Create draft, auto-save update, toggle publish/unpublish, delete.
+    - Create draft, debounced auto-save update, toggle publish/unpublish, delete.
     - Query public author articles (`/@:username`) dan single article (`/@:username/:slug`).
-  - `posts.controller.ts`, `posts.schema.ts`, `posts.routes.ts`.
+  - `posts.controller.ts` & `posts.routes.ts`.
 - [ ] **Task 2.5: Smart Analytics Module (`/api/analytics`)**
   - `analytics.service.ts`:
     - Logika deduplikasi 60 menit: Cek `PostViewLog` berdasarkan hash `(session + IP + UA)` < 60 min.
@@ -88,9 +96,10 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 ---
 
 ### 🎨 Phase 3: Frontend Foundation & Shared Design Tokens
+
 - [ ] **Task 3.1: CSS Design Tokens & Typography**
   - `frontend/src/styles/variables.css`: Palette warna (Light & Dark), Glassmorphism, Radii, Shadows, Spacing.
-  - `frontend/src/styles/typography.css`: Font *Outfit* & *Inter*, line heights, heading scales.
+  - `frontend/src/styles/typography.css`: Font _Outfit_ & _Inter_, line heights, heading scales.
   - `frontend/src/styles/reset.css`: Modern CSS reset.
 - [ ] **Task 3.2: API Client & Query Client Setup**
   - `frontend/src/shared/api/apiClient.ts`: Fetch/Axios instance dengan `credentials: 'include'` dan error handling.
@@ -107,6 +116,7 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 ---
 
 ### 👤 Phase 4: Frontend Auth & User Profile Features
+
 - [ ] **Task 4.1: Auth State & Context**
   - `AuthContext.tsx` & `useAuth.ts`: Menyimpan user state, login method, logout method, check session.
 - [ ] **Task 4.2: Login Page (`/login`) - MVP Pattern**
@@ -123,6 +133,7 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 ---
 
 ### ✍️ Phase 5: Frontend Dashboard & Editor Studio (Ghost Style)
+
 - [ ] **Task 5.1: Dashboard Posts Management Page (`/dashboard/posts`)**
   - Model: `posts.queries.ts` (TanStack Query hooks).
   - Presenter: `usePostListPresenter.ts` (Filter status, search, delete handler).
@@ -149,6 +160,7 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 ---
 
 ### 📊 Phase 6: Frontend Analytics Dashboard (Ghost Style)
+
 - [ ] **Task 6.1: Analytics Overview Page (`/dashboard` & `/dashboard/analytics`)**
   - Model: `analytics.queries.ts`.
   - Presenter: `useAnalyticsPresenter.ts` (Timeframe switcher 7d/30d).
@@ -161,6 +173,7 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 ---
 
 ### 📖 Phase 7: Frontend Public Views (Substack & Overreacted Style)
+
 - [ ] **Task 7.1: Personal Creator Landing Page (`/@:username`) - Substack Style**
   - Model: `publicBlog.queries.ts`.
   - Presenter: `useAuthorBlogPresenter.ts`.
@@ -182,6 +195,7 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 ---
 
 ### 🧪 Phase 8: E2E Integration, LOC Audit & Polish
+
 - [ ] **Task 8.1: Full E2E Flow Testing**
   - Tes register user baru &rarr; login (cek HttpOnly cookie) &rarr; buat artikel di Tiptap editor &rarr; upload gambar &rarr; auto-save tersimpan &rarr; publish.
   - Buka halaman publik `/@:username` dan `/@:username/:postSlug`.
