@@ -24,70 +24,40 @@ Platform ini menggabungkan 3 kekuatan desain web publishing terbaik di dunia:
 
 ---
 
-## 2. 🎨 CSS Variables & Design Tokens (`index.css`)
+## 2. 🎨 Tailwind CSS v4 & Design Tokens (`index.css`)
 
-Semua styling menggunakan **Vanilla CSS Modules** dengan sistem token terpusat:
+Seluruh styling frontend menggunakan **Tailwind CSS v4** (`@tailwindcss/vite` & `@tailwindcss/typography`) yang disatukan dengan token CSS Variables di blok `@theme`:
 
 ```css
-:root {
-  /* Colors - Light Theme */
-  --bg-primary: #fcfcfd;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f4f5f7;
-  --bg-glass: rgba(255, 255, 255, 0.85);
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
-  --text-primary: #121826;
-  --text-secondary: #4b5563;
-  --text-muted: #9ca3af;
-  --text-inverse: #ffffff;
+@theme {
+  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
-  --accent-primary: #3b82f6;       /* Modern Indigo / Blue */
-  --accent-hover: #2563eb;
-  --accent-subtle: #eff6ff;
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-subtle: var(--accent-subtle);
   
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+  --color-bg-glass: var(--bg-glass);
 
-  /* Borders & Shadows */
-  --border-color: #e5e7eb;
-  --border-subtle: #f3f4f6;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-
-  /* Typography */
-  --font-sans: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-
-  /* Border Radii */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-full: 9999px;
-
-  /* Transitions */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Dark Theme Support */
-[data-theme='dark'] {
-  --bg-primary: #0a0c10;
-  --bg-secondary: #12161f;
-  --bg-tertiary: #1a202c;
-  --bg-glass: rgba(18, 22, 31, 0.85);
-
-  --text-primary: #f9fafb;
-  --text-secondary: #d1d5db;
-  --text-muted: #6b7280;
-
-  --border-color: #272f3d;
-  --border-subtle: #1e2430;
-  --accent-subtle: rgba(59, 130, 246, 0.15);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
 }
 ```
+
+### 🧩 25 Shared UI Atoms Suite (`src/shared/components/ui/`)
+Seluruh komponen UI Atoms menggunakan **Pure Tailwind CSS v4** tanpa ketergantungan file `.module.css` ekstra:
+1. **Form & Input (7)**: `Button.tsx`, `Input.tsx`, `Textarea.tsx`, `Select.tsx`, `Checkbox.tsx`, `TagInput.tsx`, `ImageUpload.tsx`.
+2. **Data Display (7)**: `Badge.tsx`, `Card.tsx` (*glassmorphism & hoverLift*), `Avatar.tsx` (*smart initials*), `Tabs.tsx`, `Pagination.tsx`, `Divider.tsx`, `EmptyState.tsx`, `ShareButtons.tsx`.
+3. **Overlays & Feedback (8)**: `Modal.tsx`, `Drawer.tsx`, `Dropdown.tsx`, `Tooltip.tsx`, `Alert.tsx`, `Spinner.tsx`, `Skeleton.tsx`, `ReadingProgressBar.tsx`.
+4. **Theme & Toast (3)**: `ThemeToggle.tsx`, `Toast.tsx` + `ToastContext.tsx` + `useToast.ts`.
 
 ---
 

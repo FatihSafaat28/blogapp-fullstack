@@ -20,6 +20,6 @@ Selamat datang di repositori dokumentasi resmi untuk **Multi-User PERN Blog Plat
 
 ## 🎯 Prinsip Utama Proyek
 1. **Strict File Limit**: Maksimal **300 baris kode per file**. Jika mendekati batas, wajib di-refactor/dipecah menjadi sub-komponen atau sub-modul.
-2. **Frontend MVP Pattern**: Pisahkan dengan jelas antara **Model** (data/API/query), **Presenter** (hooks/state/handlers), dan **View** (murni JSX + CSS modules).
+2. **Frontend MVP Pattern**: Pisahkan dengan jelas antara **Model** (data/API/query), **Presenter** (hooks/state/handlers), dan **View** (murni JSX + Tailwind CSS v4).
 3. **Type-Safety End-to-End**: Menggunakan TypeScript secara ketat di Backend & Frontend dengan validasi runtime menggunakan Zod.
 4. **Security by Default**: JWT disimpan dalam `httpOnly` secure cookies, sanitasi HTML, password hashing dengan `bcryptjs`, dan rate limiting.

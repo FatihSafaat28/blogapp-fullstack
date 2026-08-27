@@ -56,10 +56,7 @@ frontend/src/features/dashboard/posts/
 │   └── posts.queries.ts
 ├── types/                       # Definisi TypeScript interface
 │   └── post.types.ts
-├── styles/                      # CSS Modules terisolasi
-│   ├── PostList.module.css
-│   └── PostEditor.module.css
-└── pages/                       # Orchestrator halaman untuk Router
+└── pages/                       # Orchestrator halaman untuk Router (Pure Tailwind CSS)
     ├── PostListPage.tsx
     └── PostEditorPage.tsx
 ```

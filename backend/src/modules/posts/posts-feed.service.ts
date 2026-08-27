@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../config/prisma.js';
 import { AppError } from '../../middlewares/error.middleware.js';
 import { ExploreQueryInput } from './posts.schema.js';
@@ -8,7 +9,7 @@ export class PostsFeedService {
     const { tab, tag, search, page, limit } = query;
     const skip = (page - 1) * limit;
 
-    const where: any = { published: true };
+    const where: Prisma.PostWhereInput = { published: true };
 
     if (tag) {
       where.postTags = {

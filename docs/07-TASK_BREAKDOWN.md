@@ -90,32 +90,52 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 
 ### 🎨 Phase 3: Frontend Foundation & Shared Design Tokens
 
-- [ ] **Task 3.1: CSS Design Tokens & Typography**
+- [x] **Task 3.1: CSS Design Tokens & Typography**
   - `frontend/src/styles/variables.css`: Palette warna (Light & Dark), Glassmorphism, Radii, Shadows, Spacing.
-  - `frontend/src/styles/typography.css`: Font _Outfit_ / _Plus Jakarta Sans_ & _Inter_, line heights, heading scales.
-  - `frontend/src/styles/reset.css`: Modern CSS reset.
-- [ ] **Task 3.2: API Client, Query Client & Auth Store**
+  - `frontend/src/styles/typography.css`: Font _Outfit_ & _Inter_, fluid type scale (`clamp()`), reader prose styles.
+  - `frontend/src/styles/reset.css` & `animations.css`: Modern CSS reset dan micro-animations.
+  - `frontend/src/styles/index.css`: Penggabungan seluruh design tokens dan global layout containers.
+- [x] **Task 3.2: API Client, Query Client & Auth Store**
+  - `frontend/src/features/auth/types/auth.types.ts`: TypeScript interfaces (`User`, `AuthResponse`, `ApiResponse`).
   - `frontend/src/shared/api/apiClient.ts`: Axios instance dengan `withCredentials: true`, interceptors auto refresh token saat 401.
-  - `frontend/src/app/providers.tsx`: TanStack QueryClientProvider, Toast/Alert Provider.
-  - `frontend/src/features/auth/stores/authStore.ts`: Zustand state management (`user`, `isAuthenticated`, `login`, `logout`, `checkAuth`).
-- [ ] **Task 3.3: Shared UI Atoms (< 150 LOC per file)**
-  - `Button.tsx`, `Input.tsx`, `Badge.tsx`, `Card.tsx`, `Modal.tsx`, `Dropdown.tsx`, `Spinner.tsx`, `Toast.tsx`.
-- [ ] **Task 3.4: Layout Shells**
-  - `Navbar.tsx`: Navbar publik global (Logo, Explore, Search, Login/Register / Avatar User).
-  - `DashboardLayout.tsx`: Ghost-style layout dengan sidebar tetap dan top bar.
-  - `PublicLayout.tsx`: Layout container untuk halaman author dan pembaca.
-- [ ] **Task 3.5: App Router & Route Protection**
-  - `frontend/src/app/router.tsx`: React Router v6 setup dengan `ProtectedRoute` dan `PublicOnlyRoute`.
+  - `frontend/src/features/auth/stores/authStore.ts`: Zustand global state management (`useAuthStore`).
+  - `frontend/src/app/providers.tsx`: TanStack QueryClientProvider dengan 5m cache.
+  - `frontend/src/app/App.tsx`: Provider wrapper dan inisialisasi sesi `checkAuth()`.
+- [x] **Task 3.3: Pure Tailwind CSS v4 UI Atoms Suite (< 150 LOC per file - 25 Essential Components)**
+  - Terintegrasi penuh dengan **Tailwind CSS v4** (`@tailwindcss/vite` & `@tailwindcss/typography`) di `vite.config.ts` dan `src/styles/index.css`.
+  - **Form & Input (7)**: `Button.tsx` (variants, sizes, loading), `Input.tsx` (labels, error feedback, search/clear support), `Textarea.tsx`, `Select.tsx` (custom chevron), `Checkbox.tsx` (custom check toggle), `TagInput.tsx` (interactive chip tags), `ImageUpload.tsx` (dropzone cover & avatar uploader terintegrasi backend WebP).
+  - **Data Display (7)**: `Card.tsx` (glass surface, hover lift), `Badge.tsx` (published, draft, tags), `Avatar.tsx` (smart initials & gradient fallback), `Tabs.tsx` (segmented pills), `Pagination.tsx` (page bar), `Divider.tsx` (labeled separator), `EmptyState.tsx` (rich empty view with action CTA), `ShareButtons.tsx` (copy link & social share).
+  - **Overlays & Feedback (8)**: `Modal.tsx` (dialogs with backdrop blur), `Drawer.tsx` (sliding right settings drawer for editor), `Dropdown.tsx` (post action popover), `Tooltip.tsx` (editor toolbar hover tip), `Alert.tsx` (inline callouts), `Spinner.tsx` & `Skeleton.tsx` (loading states), `ReadingProgressBar.tsx` (top reading scroll indicator).
+  - **Theme & Toast (3)**: `ThemeToggle.tsx` (Light/Dark mode switcher with class toggling & localStorage), `Toast.tsx` + `ToastContext.tsx` + `useToast.ts` (global floating notification system).
+  - **Zero `.module.css`**: Seluruh 25 komponen berukuran 26 s.d. 114 LOC mandiri dalam satu berkas `.tsx`.
+- [x] **Task 3.4: Layout Shells (Pure Tailwind CSS v4)**
+  - `PublicNavbar.tsx`: Navbar publik global berbalut glassmorphism (Brand Logo, Explore link, ThemeToggle, dynamic guest/logged-in states dengan Avatar Dropdown).
+  - `PublicFooter.tsx`: Footer minimalis dengan branding dan copyright.
+  - `PublicLayout.tsx`: Container layout publik untuk seluruh halaman author dan pembaca.
+  - `DashboardSidebar.tsx`: Ghost-style minimal sidebar (Logo studio, tombol cepat `+ Write New Post`, menu Artikel, Analitik, Pengaturan, mini user profile card).
+  - `DashboardHeader.tsx`: Top bar studio dengan breadcrumb, link langsung ke blog publik Substack-style (`/@:username`), dan ThemeToggle.
+  - `DashboardLayout.tsx`: Master layout studio responsif (fixed sidebar desktop, mobile drawer overlay).
+- [x] **Task 3.5: App Router & Route Protection (React Router v6)**
+  - `ProtectedRoute.tsx`: Guard autentikasi untuk memproteksi `/dashboard/*` dan `/editor/*` (redirect ke `/login` dengan preserve URL state).
+  - `PublicOnlyRoute.tsx`: Guard khusus tamu untuk mencegah user yang sudah login mengakses `/login` dan `/register` (redirect otomatis ke `/dashboard/posts`).
+  - `router.tsx`: Konfigurasi rute bersarang lengkap untuk seluruh 9 rute aplikasi dengan visual feedback dan layout wrapper yang tepat.
 
 ---
 
 ### 👤 Phase 4: Frontend Auth & User Profile Features
 
-- [ ] **Task 4.1: Auth State & Context**
-  - `AuthContext.tsx` & `useAuth.ts`: Menyimpan user state, login method, logout method, check session.
+- [ ] **Task 4.1: Auth State & Context Integration**
+  - Zustand auth store (`useAuthStore`) integrasi dengan form handler.
 - [ ] **Task 4.2: Login Page (`/login`) - MVP Pattern**
   - Model: `auth.api.ts`.
   - Presenter: `useLoginPresenter.ts` (React Hook Form + Zod).
+  - View: `LoginPage.tsx` & `LoginFormView.tsx` (Pure Tailwind CSS).
+- [ ] **Task 4.3: Register Page (`/register`) - MVP Pattern**
+  - Presenter: `useRegisterPresenter.ts`.
+  - View: `RegisterPage.tsx` & `RegisterFormView.tsx` (Pure Tailwind CSS).
+- [ ] **Task 4.4: Profile & Blog Settings Page (`/dashboard/settings`)**
+  - Presenter: `useSettingsPresenter.ts` (Update avatar, bio, custom blog title, social links).
+  - View: `SettingsPage.tsx`, `ProfileFormView.tsx`, `BlogAppearanceView.tsx` (Pure Tailwind CSS).eLoginPresenter.ts` (React Hook Form + Zod).
   - View: `LoginPage.tsx` & `LoginFormView.tsx` + `Auth.module.css`.
 - [ ] **Task 4.3: Register Page (`/register`) - MVP Pattern**
   - Presenter: `useRegisterPresenter.ts`.

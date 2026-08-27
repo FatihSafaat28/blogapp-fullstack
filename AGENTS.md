@@ -36,7 +36,7 @@ Setiap kali kamu berada pada sesi chat baru atau menerima tugas baru, kamu **WAJ
 ### B. Frontend MVP Pattern (Model-View-Presenter)
 * **Model (`services/`, `types/`)**: Bertanggung jawab atas query data, Axios/Fetch API, tipe data TypeScript, dan cache TanStack Query.
 * **Presenter (`hooks/`)**: Bertanggung jawab atas state lokal, form handling, event callbacks, dan logika navigasi.
-* **View (`components/`, `pages/`)**: Murni representasi visual JSX + CSS Module. Dilarang menaruh logic query atau fetch data langsung di dalam JSX view.
+* **View (`components/`, `pages/`)**: Murni representasi visual JSX + Tailwind CSS v4. Dilarang menaruh logic query atau fetch data langsung di dalam JSX view.
 
 ### C. Backend Clean Modular Architecture
 * **Routes (`*.routes.ts`)**: Mendaftarkan rute dan middleware validasi Zod + Auth.

@@ -61,12 +61,22 @@ export const authGuard = async (
 
     req.user = user;
     next();
-  } catch (error: any) {
-    if (error?.name === 'TokenExpiredError') {
+  } catch (error: unknown) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'name' in error &&
+      (error as { name: string }).name === 'TokenExpiredError'
+    ) {
       next(new AppError('Token telah kedaluwarsa. Silakan refresh sesi Anda.', 401));
       return;
     }
-    if (error?.name === 'JsonWebTokenError') {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'name' in error &&
+      (error as { name: string }).name === 'JsonWebTokenError'
+    ) {
       next(new AppError('Token tidak valid.', 401));
       return;
     }

@@ -123,11 +123,66 @@ Dokumen ini melacak riwayat perubahan, fitur yang telah diselesaikan, dan rencan
 
 ---
 
-## 🎯 Next Steps (Phase 3: Frontend Foundations, Theme & Auth MVP):
-- [ ] **Task 3.1: Global Design Tokens & Typography**: Konfigurasi Google Fonts (Inter, Plus Jakarta Sans, JetBrains Mono), CSS Variables tema (light/dark mode glassmorphism), dan base resets.
-- [ ] **Task 3.2: API Client & Auth State Management**: Setup Axios instance (withCredentials, interceptors auto refresh token), TanStack React Query provider, dan Zustand Auth Store (`useAuthStore`).
-- [ ] **Task 3.3: Authentication Pages**: Halaman Register (`/register`) dan Login (`/login` dengan *Remember Me* checkbox, validasi React Hook Form + Zod, alert notifikasi elegan).
-- [ ] **Task 3.4: Route Guards & Protected Layout**: Komponen `ProtectedRoute` dan `PublicOnlyRoute` untuk navigasi aman.
+## 📌 [2026-08-27] - Phase 3: Frontend Foundation & Shared Design Tokens
+
+### ✅ Completed:
+1. **Task 3.1: CSS Design Tokens & Typography**:
+   - `frontend/src/styles/variables.css`: Sistem token warna HSL lengkap untuk Light & Dark mode, efek Glassmorphism (`--bg-glass`, `--border-glass`, `--backdrop-blur`), bayangan elevasi, dan kurva transisi *spring*.
+   - `frontend/src/styles/typography.css`: Skala ukuran font *fluid* (menggunakan `clamp()`), hirarki heading tegas (*Outfit*), body teks nyaman (*Inter*), dan styling membaca artikel (*Overreacted / Substack style* `.prose-reader`).
+   - `frontend/src/styles/reset.css`: Reset modern anti-glitch, smooth scroll, antialiased smoothing, dan custom selection highlight.
+   - `frontend/src/styles/animations.css`: Micro-animations (`fadeIn`, `slideUp`, `scaleIn`), hover lift cards, dan skeleton loading shimmer.
+   - `frontend/src/styles/index.css`: Penggabungan seluruh modular design tokens dan utilitas layout global (`.container`, `.reader-container`, `.card-glass`, `.badge`).
+   - Verifikasi build `npm run build` lulus 100% dengan 0 error. Seluruh berkas CSS `< 190 LOC` (mematuhi `< 300 LOC`).
+
+2. **Task 3.2: API Client, TanStack Query & Auth State**:
+   - `frontend/src/features/auth/types/auth.types.ts`: Definisi tipe data TypeScript untuk `User`, `AuthResponse`, dan `ApiResponse`.
+   - `frontend/src/shared/api/apiClient.ts`: Axios instance terpusat dengan `withCredentials: true` dan *silent refresh token interceptor* (menangani auto-refresh saat token kedaluwarsa 401 dan mengulang request transparan).
+   - `frontend/src/features/auth/stores/authStore.ts`: Zustand global state store (`useAuthStore`) untuk mengelola sesi `user`, `isAuthenticated`, `isLoading`, `checkAuth`, dan `logout`.
+   - `frontend/src/app/providers.tsx`: TanStack `QueryClientProvider` dengan konfigurasi caching performa tinggi (5m staleTime).
+   - `frontend/src/app/App.tsx`: Integrasi wrapper `Providers` dan auto initialization `checkAuth()` saat mount.
+   - Verifikasi build `npm run build` lulus 100% dengan 0 error. Seluruh berkas `< 80 LOC` (mematuhi `< 300 LOC`).
+
+3. **Task 3.3: Shared UI Atoms & Tailwind CSS v4 Engine**:
+   - Terintegrasi penuh dengan **Tailwind CSS v4** (`@tailwindcss/vite` & `@tailwindcss/typography`) di `vite.config.ts` dan `src/styles/index.css`.
+   - `frontend/src/shared/components/ui/Form/`: `Button.tsx`, `Input.tsx` (dengan support icons & clear button), `Textarea.tsx`, `Select.tsx` (custom chevron), `Checkbox.tsx` (custom toggle), `TagInput.tsx` (interactive chip tags), `ImageUpload.tsx` (dropzone cover & avatar uploader terintegrasi backend).
+   - `frontend/src/shared/components/ui/Display/`: `Card.tsx` (glass surface & hover lift), `Badge.tsx` (status tag chips), `Avatar.tsx` (smart initials & gradient fallback), `Tabs.tsx` (segmented pill tabs), `Pagination.tsx` (page bar), `Divider.tsx` (section separator), `EmptyState.tsx` (zero-data CTA), `ShareButtons.tsx` (copy link & social sharing).
+   - `frontend/src/shared/components/ui/Overlay/`: `Modal.tsx` (dialog backdrop blur & escape listener), `Drawer.tsx` (sliding right post settings panel), `Dropdown.tsx` (popover action menu), `Tooltip.tsx` (editor toolbar hover helper).
+   - `frontend/src/shared/components/ui/Feedback/`: `Spinner.tsx` (rotating SVG wheel), `Skeleton.tsx` (shimmer loading placeholder), `Alert.tsx` (inline callout), `ReadingProgressBar.tsx` (top scroll reader progress).
+   - `frontend/src/shared/components/ui/Theme/`: `ThemeToggle.tsx` (Dark/Light switcher dengan localStorage).
+   - `frontend/src/shared/components/ui/Toast/`: `Toast.tsx`, `ToastContext.tsx`, `useToast.ts` (global notification toast system terintegrasi di `providers.tsx`).
+   - `frontend/src/shared/components/ui/index.ts`: Barrel export satu pintu untuk seluruh 25 komponen UI.
+   - Verifikasi build `npm run build` lulus 100% dengan 0 error. Seluruh 25 berkas komponen `< 110 LOC` (mematuhi batas `< 150 LOC` dan `< 300 LOC`).
+
+4. **Task 3.4: Layout Shells (Pure Tailwind CSS v4)**:
+   - `frontend/src/shared/components/layout/PublicNavbar.tsx`: Navbar publik global berbalut glassmorphism (Brand Logo, Explore link, ThemeToggle, dynamic guest/logged-in states dengan Avatar Dropdown).
+   - `frontend/src/shared/components/layout/PublicFooter.tsx`: Footer minimalis dengan branding dan copyright.
+   - `frontend/src/shared/components/layout/PublicLayout.tsx`: Container layout publik untuk seluruh halaman author dan pembaca.
+   - `frontend/src/shared/components/layout/DashboardSidebar.tsx`: Ghost-style minimal sidebar (Logo studio, tombol cepat `+ Write New Post`, menu Artikel, Analitik, Pengaturan, mini user profile card).
+   - `frontend/src/shared/components/layout/DashboardHeader.tsx`: Top bar studio dengan breadcrumb, link langsung ke blog publik Substack-style (`/@:username`), dan ThemeToggle.
+   - `frontend/src/shared/components/layout/DashboardLayout.tsx`: Master layout studio responsif (fixed sidebar desktop, mobile drawer overlay).
+   - `frontend/src/shared/components/layout/index.ts`: Barrel export layout.
+
+5. **Task 3.5: App Router & Route Protection (React Router v6)**:
+   - `frontend/src/app/ProtectedRoute.tsx`: Guard autentikasi untuk memproteksi `/dashboard/*` dan `/editor/*` (redirect ke `/login` dengan preserve URL state).
+   - `frontend/src/app/PublicOnlyRoute.tsx`: Guard khusus tamu untuk mencegah user yang sudah login mengakses `/login` dan `/register` (redirect otomatis ke `/dashboard/posts`).
+   - `frontend/src/app/router.tsx`: Konfigurasi rute bersarang lengkap untuk seluruh 9 rute aplikasi dengan visual feedback dan layout wrapper yang tepat.
+   - Verifikasi build `npm run build` lulus 100% dengan 0 error. Seluruh berkas `< 130 LOC` (mematuhi batas `< 150 LOC` dan `< 300 LOC`).
+
+6. **Phase 1–3 Codebase Audit & Hardening**:
+   - `frontend/src/app/ProtectedRoute.tsx` & `PublicOnlyRoute.tsx`: Menambahkan guard `!isInitialized` untuk mencegah *false-negative redirect* saat user me-refresh halaman dashboard.
+   - `backend/src/modules/posts/posts-feed.service.ts` & `posts.service.ts`: Mengganti tipe query `any` dengan `Prisma.PostWhereInput` untuk strict type-safety.
+   - `backend/src/middlewares/auth.middleware.ts`: Memperbarui catch block menjadi `catch (error: unknown)` dengan type narrowing eksplisit.
+   - `backend/src/modules/auth/auth.routes.ts`: Menambahkan `authLimiter` (15 req / 15 min) untuk proteksi brute-force login & register.
+   - `backend/src/config/openapi/`: Memecah file `openapi.ts` (559 LOC) menjadi modul terpisah (`auth.docs.ts`, `posts.docs.ts`, `analytics.docs.ts`, `users.docs.ts`), menjadikan 100% file di monorepo `< 240 LOC`.
+   - Verifikasi build `npm run build` monorepo lulus 100% dengan 0 error.
+
+---
+
+### 🎯 Next Steps:
+- [ ] **Phase 4: Frontend Auth & User Profile Features**:
+  - [ ] **Task 4.1 & 4.2**: Login Page (`/login`) dengan MVP Pattern (Model: `auth.api.ts`, Presenter: `useLoginPresenter.ts`, View: `LoginPage.tsx` & `LoginFormView.tsx`).
+  - [ ] **Task 4.3**: Register Page (`/register`) dengan MVP Pattern (`useRegisterPresenter.ts`, `RegisterPage.tsx`, `RegisterFormView.tsx`).
+  - [ ] **Task 4.4**: Profile & Blog Settings Page (`/dashboard/settings`).
 
 
 

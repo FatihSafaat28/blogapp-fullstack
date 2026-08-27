@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../config/prisma.js';
 import { AppError } from '../../middlewares/error.middleware.js';
 import {
@@ -177,7 +178,7 @@ export class PostsService {
     const { status, search, page, limit } = query;
     const skip = (page - 1) * limit;
 
-    const where: any = { authorId };
+    const where: Prisma.PostWhereInput = { authorId };
 
     if (status === 'published') where.published = true;
     if (status === 'draft') where.published = false;

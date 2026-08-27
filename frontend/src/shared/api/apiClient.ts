@@ -1,67 +1,79 @@
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-export interface ApiResponse<T = unknown> {
-  success: boolean;
-  message?: string;
-  data?: T;
-  errors?: Array<{ field: string; message: string }>;
-}
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-export class ApiError extends Error {
-  public statusCode: number;
-  public errors?: Array<{ field: string; message: string }>;
-
-  constructor(
-    message: string,
-    statusCode: number,
-    errors?: Array<{ field: string; message: string }>
-  ) {
-    super(message);
-    this.name = 'ApiError';
-    this.statusCode = statusCode;
-    this.errors = errors;
-  }
-}
-
-export async function apiClient<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<ApiResponse<T>> {
-  const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
-
-  const defaultHeaders: HeadersInit = {
+export const apiClient = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true,
+  headers: {
     'Content-Type': 'application/json',
-  };
+  },
+});
 
-  // If body is FormData (e.g. file upload), let browser set Content-Type with boundary
-  if (options.body instanceof FormData) {
-    delete (defaultHeaders as Record<string, string>)['Content-Type'];
-  }
+// Flag & Queue untuk mengelola silent token refresh
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value?: unknown) => void;
+  reject: (reason?: unknown) => void;
+}> = [];
 
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      ...defaultHeaders,
-      ...options.headers,
-    },
-    credentials: 'include', // Automatically sends HttpOnly JWT cookies
+const processQueue = (error: Error | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve();
+    }
   });
+  failedQueue = [];
+};
 
-  let data: ApiResponse<T>;
-  try {
-    data = await response.json();
-  } catch {
-    throw new ApiError('Gagal memproses respons dari server', response.status);
+// Response Interceptor: Menangani 401 dan auto-refresh token
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
+
+    // Abaikan jika error berasal dari endpoint login, register, atau refresh-token itu sendiri
+    const isAuthRoute =
+      originalRequest?.url?.includes('/auth/login') ||
+      originalRequest?.url?.includes('/auth/register') ||
+      originalRequest?.url?.includes('/auth/refresh-token');
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
+      if (isRefreshing) {
+        // Jika sedang proses refresh, masukkan request ke antrean
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(() => apiClient(originalRequest))
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        // Panggil endpoint refresh token di backend
+        await axios.post(
+          `${BASE_URL}/auth/refresh-token`,
+          {},
+          { withCredentials: true }
+        );
+
+        processQueue(null);
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError as Error);
+        // Sesi kedaluwarsa sepenuhnya
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    return Promise.reject(error);
   }
-
-  if (!response.ok || !data.success) {
-    throw new ApiError(
-      data.message || 'Terjadi kesalahan pada server',
-      response.status,
-      data.errors
-    );
-  }
-
-  return data;
-}
+);
