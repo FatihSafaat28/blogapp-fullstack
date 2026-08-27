@@ -75,10 +75,59 @@ Dokumen ini melacak riwayat perubahan, fitur yang telah diselesaikan, dan rencan
 
 ---
 
-### 🎯 Next Steps (Phase 2: Backend Feature Modules):
-- [ ] **Task 2.1**: Auth Module (`/api/auth` - Register, Login dengan Remember Me, Refresh Token, Logout, Me).
-- [ ] **Task 2.2**: Media Upload Module (`/api/media` - Multer image upload maks 5MB).
-- [ ] **Task 2.3**: User & Profile Settings Module (`/api/users` - Update profil, bio, custom blog title).
-- [ ] **Task 2.4**: Posts Module (`/api/posts` - CRUD, Tiptap JSON/HTML, reading time, auto-slug, publish toggle).
-- [ ] **Task 2.5**: Smart Analytics Module (`/api/analytics` - 60-min deduplication view counter, dashboard chart data).
+## 📌 [2026-08-27] - Phase 2: Backend Feature Modules
+
+### ✅ Completed:
+1. **Task 2.1: Authentication Module (`/api/auth`)**:
+   - `backend/src/modules/auth/auth.schema.ts`: Skema validasi Zod ketat untuk pendaftaran (`registerSchema`) dan masuk akun (`loginSchema` dengan *Remember Me*).
+   - `backend/src/modules/auth/auth.service.ts`: Logika bisnis hashing `bcryptjs` (salt 10), verifikasi identitas, penerbitan token JWT ganda (Access 15m & Refresh 7d/30d), dan profile resolver.
+   - `backend/src/modules/auth/auth.controller.ts`: Pengaturan cookie HttpOnly SameSite (`accessToken`, `refreshToken`), refresh token rotation, logout, dan status response.
+   - `backend/src/modules/auth/auth.routes.ts`: Rute `/register`, `/login`, `/refresh-token`, `/logout`, dan `/me` (dilindungi `authGuard`).
+   - `backend/src/index.ts`: Mendaftarkan router `authRoutes` pada `/api/auth`.
+   - Verifikasi build `npm run build` lulus 100% dengan 0 error TypeScript. Seluruh file `< 200 LOC`.
+
+2. **Task 2.2: Media Upload Module (`/api/media`)**:
+   - `backend/src/middlewares/upload.middleware.ts`: Multer memory storage dengan validasi MIME types (`JPG`, `PNG`, `WEBP`, `GIF`) dan batas 5MB.
+   - `backend/src/modules/media/media.service.ts`: Pengolahan citra via `sharp`, kompresi otomatis ke WebP teroptimasi (max width 1600px, quality 80), sanitasi penamaan file unik `img-[timestamp]-[hash].webp`.
+   - `backend/src/modules/media/media.controller.ts`: Handler HTTP untuk validasi `req.file` dan pengembalian metadata URL gambar.
+   - `backend/src/modules/media/media.routes.ts`: Rute `POST /api/media/upload` dilindungi `authGuard`.
+   - `backend/src/config/openapi.ts` & `src/index.ts`: Mendaftarkan endpoint upload multipart di Swagger Studio `/docs/` dan routing Express.
+   - Verifikasi build `npm run build` lulus 100% dengan 0 error TypeScript. Seluruh file `< 100 LOC`.
+
+3. **Task 2.3: User & Profile Settings Module (`/api/users`)**:
+   - `backend/src/modules/users/users.schema.ts`: Skema validasi Zod untuk update profil (`updateProfileSchema`) dan parameter username publik (`usernameParamSchema`).
+   - `backend/src/modules/users/users.service.ts`: Query profil publik kreator (dengan relasi count artikel terbit), update profil & kustomisasi judul blog, dan kalkulasi ringkasan statistik akun (total posts, published, drafts, views).
+   - `backend/src/modules/users/users.controller.ts`: Handler HTTP untuk `getPublicProfile`, `updateProfile`, dan `getMyStats`.
+   - `backend/src/modules/users/users.routes.ts`: Rute `GET /public/:username`, `PATCH /profile` (`authGuard`), dan `GET /me/stats` (`authGuard`).
+   - `backend/src/config/openapi.ts` & `src/index.ts`: Mendaftarkan endpoint Users di Swagger Studio `/docs/` dan routing Express.
+   - Verifikasi build `npm run build` lulus 100% dengan 0 error TypeScript. Seluruh file `< 120 LOC`.
+
+4. **Task 2.4: Posts Module (`/api/posts`)**:
+   - `backend/src/modules/posts/posts.schema.ts`: Skema validasi Zod untuk pembuatan draf, auto-save update, toggle publish, dan query parameter feed explore (3 tab).
+   - `backend/src/modules/posts/posts.helper.ts`: Utilitas sanitasi HTML anti-XSS (`sanitize-html`), kalkulasi otomatis waktu baca (`readingTimeMinutes`), ekstraksi ringkasan `excerpt`, dan generator slug unik per author (`@@unique([authorId, slug])`).
+   - `backend/src/modules/posts/posts.service.ts`: Logika CRUD artikel, debounced auto-save, manajemen sinkronisasi tags (`PostTag`), toggle publikasi (`publishedAt`), penghapusan permanen, dan query daftar dashboard posts.
+   - `backend/src/modules/posts/posts-feed.service.ts`: Algoritma feed explore 3 tab (Trending score decay, For You, Latest), daftar artikel per kreator (`/@:username`), dan artikel tunggal untuk halaman pembaca (`/@:username/:slug`).
+   - `backend/src/modules/posts/posts.controller.ts`: Handler HTTP untuk 9 endpoint posts publik dan privat.
+   - `backend/src/modules/posts/posts.routes.ts`: Rute Express dengan rate limiter anti-spam (maks 10 post / 15m) dan proteksi `authGuard`.
+   - `backend/src/config/openapi.ts` & `src/index.ts`: Mendaftarkan seluruh katalog endpoint Posts di Swagger Studio `/docs/` dan routing Express.
+   - Verifikasi build `npm run build` lulus 100% dengan 0 error TypeScript. Seluruh file `< 240 LOC` (mematuhi `< 300 LOC`).
+
+5. **Task 2.5: Smart Analytics Module (`/api/analytics`)**:
+   - `backend/src/modules/analytics/analytics.schema.ts`: Skema validasi Zod untuk parameter UUID `postId` dan query `range` (`7d` | `30d`).
+   - `backend/src/modules/analytics/analytics.helper.ts`: Generator hash SHA-256 fingerprint pembaca anonim dan deret tanggal harian.
+   - `backend/src/modules/analytics/analytics.service.ts`: Deduplikasi 60 menit view counter (mencegah manipulasi F5 refresh), atomic increment `post.viewCount`, dan agregasi statistik grafik tren harian serta Top 5 artikel untuk Recharts.
+   - `backend/src/modules/analytics/analytics.controller.ts`: Handler HTTP untuk `recordView` dan `getDashboardAnalytics`.
+   - `backend/src/modules/analytics/analytics.routes.ts`: Rute `POST /views/:postId` (`optionalAuthGuard`) dan `GET /dashboard` (`authGuard`).
+   - `backend/src/config/openapi.ts` & `src/index.ts`: Mendaftarkan endpoint Analytics di Swagger Studio `/docs/` dan routing Express.
+   - Verifikasi build `npm run build` lulus 100% dengan 0 error TypeScript. Seluruh file `< 140 LOC` (mematuhi `< 300 LOC`).
+
+---
+
+## 🎯 Next Steps (Phase 3: Frontend Foundations, Theme & Auth MVP):
+- [ ] **Task 3.1: Global Design Tokens & Typography**: Konfigurasi Google Fonts (Inter, Plus Jakarta Sans, JetBrains Mono), CSS Variables tema (light/dark mode glassmorphism), dan base resets.
+- [ ] **Task 3.2: API Client & Auth State Management**: Setup Axios instance (withCredentials, interceptors auto refresh token), TanStack React Query provider, dan Zustand Auth Store (`useAuthStore`).
+- [ ] **Task 3.3: Authentication Pages**: Halaman Register (`/register`) dan Login (`/login` dengan *Remember Me* checkbox, validasi React Hook Form + Zod, alert notifikasi elegan).
+- [ ] **Task 3.4: Route Guards & Protected Layout**: Komponen `ProtectedRoute` dan `PublicOnlyRoute` untuk navigasi aman.
+
+
 
