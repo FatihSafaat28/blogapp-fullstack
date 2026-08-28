@@ -27,6 +27,20 @@ export class MediaService {
     }
   }
 
+  /**
+   * Menghapus file fisik dari folder uploads jika ada
+   */
+  async deleteFileIfExists(relativeUrl?: string | null): Promise<void> {
+    if (!relativeUrl || !relativeUrl.startsWith('/uploads/')) return;
+    try {
+      const filename = path.basename(relativeUrl);
+      const filePath = path.join(UPLOADS_DIR, filename);
+      await fs.unlink(filePath);
+    } catch {
+      // Abaikan jika file memang sudah tidak ada
+    }
+  }
+
   async processAndSaveImage(file: Express.Multer.File): Promise<UploadResult> {
     if (!file || !file.buffer) {
       throw new AppError('File gambar tidak ditemukan atau rusak.', 400);
@@ -34,12 +48,16 @@ export class MediaService {
 
     await this.ensureUploadsDirectory();
 
-    const randomHash = crypto.randomBytes(4).toString('hex');
-    const timestamp = Date.now();
+    // Content-based SHA-256 hash (Mencegah duplikasi file yang identik)
+    const contentHash = crypto
+      .createHash('sha256')
+      .update(file.buffer)
+      .digest('hex')
+      .slice(0, 16);
 
     // Khusus GIF beranimasi, pertahankan ekstensi .gif
     if (file.mimetype === 'image/gif') {
-      const filename = `img-${timestamp}-${randomHash}.gif`;
+      const filename = `img-${contentHash}.gif`;
       const filePath = path.join(UPLOADS_DIR, filename);
 
       await fs.writeFile(filePath, file.buffer);
@@ -54,7 +72,7 @@ export class MediaService {
     }
 
     // Untuk JPG, PNG, dan WEBP: Konversi & optimasi ke format WebP (max-width 1600px, quality 80)
-    const filename = `img-${timestamp}-${randomHash}.webp`;
+    const filename = `img-${contentHash}.webp`;
     const filePath = path.join(UPLOADS_DIR, filename);
 
     try {

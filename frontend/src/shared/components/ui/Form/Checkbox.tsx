@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check } from 'lucide-react';
+import { Check } from '@phosphor-icons/react';
 
 export interface CheckboxProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
@@ -10,8 +10,8 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
   ({ label, className = '', checked, disabled, ...props }, ref) => {
     return (
       <label
-        className={`inline-flex items-center gap-2 cursor-pointer select-none text-sm text-slate-700 dark:text-slate-300 ${
-          disabled ? 'opacity-50 cursor-not-allowed' : ''
+        className={`inline-flex items-center gap-2 select-none text-sm text-ink-secondary ${
+          disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
         } ${className}`}
       >
         <div className="relative flex items-center">
@@ -26,11 +26,11 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
           <div
             className={`w-4.5 h-4.5 rounded flex items-center justify-center border transition-all duration-150 ${
               checked
-                ? 'bg-indigo-600 border-indigo-600 text-white'
-                : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 hover:border-indigo-500'
+                ? 'bg-brand border-brand text-ink-inverse'
+                : 'bg-canvas border-line hover:border-ink'
             }`}
           >
-            {checked && <Check size={12} strokeWidth={3} />}
+            {checked && <Check size={12} weight="bold" />}
           </div>
         </div>
         {label && <span>{label}</span>}

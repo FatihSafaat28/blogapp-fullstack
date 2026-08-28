@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   src?: string | null;
@@ -7,12 +7,12 @@ export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const GRADIENTS = [
-  'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-  'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-  'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
-  'linear-gradient(135deg, #dc2626 0%, #f87171 100%)',
-  'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
-  'linear-gradient(135deg, #9333ea 0%, #c084fc 100%)',
+  'linear-gradient(135deg, #18181b 0%, #3f3f46 100%)',
+  'linear-gradient(135deg, #27272a 0%, #52525b 100%)',
+  'linear-gradient(135deg, #15803d 0%, #166534 100%)',
+  'linear-gradient(135deg, #b45309 0%, #78350f 100%)',
+  'linear-gradient(135deg, #0369a1 0%, #075985 100%)',
+  'linear-gradient(135deg, #4c1d95 0%, #312e81 100%)',
 ];
 
 const getInitials = (name?: string): string => {
@@ -40,8 +40,15 @@ export const Avatar: React.FC<AvatarProps> = ({
   style,
   ...props
 }) => {
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    setImageError(false);
+  }, [src]);
+
   const initials = getInitials(name);
-  const background = !src ? getGradient(name) : undefined;
+  const showImage = Boolean(src && !imageError);
+  const background = !showImage ? getGradient(name) : undefined;
 
   const sizeStyles = {
     sm: 'w-8 h-8 text-xs',
@@ -52,13 +59,18 @@ export const Avatar: React.FC<AvatarProps> = ({
 
   return (
     <div
-      className={`inline-flex items-center justify-center rounded-full overflow-hidden font-heading font-bold text-white select-none shrink-0 border-2 border-slate-200 dark:border-slate-800 shadow-sm ${sizeStyles} ${className}`}
+      className={`inline-flex items-center justify-center rounded-full overflow-hidden font-heading font-bold text-ink-inverse select-none shrink-0 border border-line shadow-xs ${sizeStyles} ${className}`}
       style={{ background, ...style }}
       title={name}
       {...props}
     >
-      {src ? (
-        <img src={src} alt={name} className="w-full h-full object-cover" />
+      {showImage ? (
+        <img
+          src={src!}
+          alt={name}
+          className="w-full h-full object-cover"
+          onError={() => setImageError(true)}
+        />
       ) : (
         <span>{initials}</span>
       )}

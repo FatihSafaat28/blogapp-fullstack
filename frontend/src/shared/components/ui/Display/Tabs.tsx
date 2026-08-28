@@ -12,6 +12,7 @@ export interface TabsProps {
   activeTab: string;
   onChange: (tabId: string) => void;
   className?: string;
+  ariaLabel?: string;
 }
 
 export const Tabs: React.FC<TabsProps> = ({
@@ -19,21 +20,26 @@ export const Tabs: React.FC<TabsProps> = ({
   activeTab,
   onChange,
   className = '',
+  ariaLabel = 'Tab Navigasi',
 }) => {
   return (
     <div
-      className={`inline-flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-full border border-slate-200/80 dark:border-slate-800 select-none ${className}`}
+      role="tablist"
+      aria-label={ariaLabel}
+      className={`inline-flex items-center gap-1 p-1 bg-muted rounded-full border border-line select-none ${className}`}
     >
       {tabs.map((tab) => {
         const isActive = tab.id === activeTab;
         return (
           <button
             key={tab.id}
+            role="tab"
+            aria-selected={isActive}
             type="button"
-            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-150 whitespace-nowrap ${
+            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-150 whitespace-nowrap cursor-pointer ${
               isActive
-                ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'bg-card text-ink shadow-xs border border-line'
+                : 'text-ink-secondary hover:text-ink'
             }`}
             onClick={() => onChange(tab.id)}
           >
@@ -43,8 +49,8 @@ export const Tabs: React.FC<TabsProps> = ({
               <span
                 className={`text-xs px-2 py-0.5 rounded-full ${
                   isActive
-                    ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
-                    : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
+                    ? 'bg-muted text-ink'
+                    : 'bg-card text-ink-secondary border border-line'
                 }`}
               >
                 {tab.count}

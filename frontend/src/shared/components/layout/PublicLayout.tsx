@@ -5,7 +5,7 @@ import { PublicFooter } from './PublicFooter';
 
 export const PublicLayout: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50/50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex flex-col bg-canvas text-ink transition-colors">
       <PublicNavbar />
       <main className="flex-1 w-full">
         <Outlet />

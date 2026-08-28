@@ -16,7 +16,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 }) => {
   return (
     <div
-      className={`animate-pulse bg-slate-200 dark:bg-slate-800 ${
+      className={`animate-pulse bg-muted ${
         circle ? 'rounded-full' : 'rounded-lg'
       } ${className}`}
       style={{

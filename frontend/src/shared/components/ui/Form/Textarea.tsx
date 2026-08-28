@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -8,30 +8,39 @@ export interface TextareaProps
 }
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, error, helperText, className = '', ...props }, ref) => {
+  ({ id, name, label, error, helperText, className = '', ...props }, ref) => {
+    const generatedId = useId();
+    const textareaId = id || generatedId;
+    const textareaName = name || textareaId;
+
     return (
-      <div className={`flex flex-col gap-1.5 w-full ${className}`}>
+      <div className="flex flex-col gap-1.5 w-full">
         {label && (
-          <label className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+          <label
+            htmlFor={textareaId}
+            className="block text-xs font-semibold uppercase tracking-wider text-ink cursor-pointer select-none"
+          >
             {label}
           </label>
         )}
         <div
-          className={`flex items-center w-full bg-white dark:bg-slate-900 border rounded-lg transition-all duration-150 ${
+          className={`flex items-center w-full bg-canvas rounded-lg transition-all duration-150 ${
             error
-              ? 'border-red-500 ring-2 ring-red-500/10'
-              : 'border-slate-200 dark:border-slate-800 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20'
+              ? 'border border-danger ring-1 ring-danger'
+              : 'border border-line focus-within:ring-1 focus-within:ring-ink'
           }`}
         >
           <textarea
             ref={ref}
-            className="w-full p-3 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 bg-transparent border-none outline-none min-h-[100px] resize-y"
+            id={textareaId}
+            name={textareaName}
+            className={`w-full p-3 text-sm bg-transparent border-none outline-none min-h-25 resize-y ${className}`}
             {...props}
           />
         </div>
-        {error && <span className="text-xs font-medium text-red-500">{error}</span>}
+        {error && <span className="text-xs font-medium text-danger">{error}</span>}
         {!error && helperText && (
-          <span className="text-xs text-slate-500 dark:text-slate-400">
+          <span className="text-xs text-ink-muted">
             {helperText}
           </span>
         )}

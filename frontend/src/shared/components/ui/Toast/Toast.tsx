@@ -1,11 +1,11 @@
 import React from 'react';
 import {
   CheckCircle,
-  AlertCircle,
-  AlertTriangle,
+  WarningCircle,
+  Warning,
   Info,
   X,
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -24,37 +24,37 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
   const getIcon = () => {
     switch (toast.type) {
       case 'success':
-        return <CheckCircle size={18} className="text-emerald-500 shrink-0" />;
+        return <CheckCircle size={18} weight="fill" className="text-success shrink-0" />;
       case 'error':
-        return <AlertCircle size={18} className="text-red-500 shrink-0" />;
+        return <WarningCircle size={18} weight="fill" className="text-danger shrink-0" />;
       case 'warning':
-        return <AlertTriangle size={18} className="text-amber-500 shrink-0" />;
+        return <Warning size={18} weight="fill" className="text-warning shrink-0" />;
       case 'info':
       default:
-        return <Info size={18} className="text-indigo-500 shrink-0" />;
+        return <Info size={18} weight="fill" className="text-info shrink-0" />;
     }
   };
 
   const typeBorder = {
-    success: 'border-l-4 border-l-emerald-500',
-    error: 'border-l-4 border-l-red-500',
-    warning: 'border-l-4 border-l-amber-500',
-    info: 'border-l-4 border-l-indigo-500',
+    success: 'border-l-4 border-l-success',
+    error: 'border-l-4 border-l-danger',
+    warning: 'border-l-4 border-l-warning',
+    info: 'border-l-4 border-l-info',
   }[toast.type];
 
   return (
     <div
-      className={`pointer-events-auto flex items-center gap-3 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl min-w-[280px] max-w-md text-sm text-slate-800 dark:text-slate-200 animate-slideUp ${typeBorder}`}
+      className={`pointer-events-auto flex items-center gap-3 p-4 bg-card border border-line rounded-xl shadow-xl min-w-70 max-w-md text-sm text-ink animate-slideUp ${typeBorder}`}
     >
       {getIcon()}
       <span className="flex-1 font-medium leading-snug">{toast.message}</span>
       <button
         type="button"
-        className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+        className="p-1 text-ink-muted hover:text-ink rounded-md hover:bg-muted transition-colors cursor-pointer"
         onClick={() => onDismiss(toast.id)}
         aria-label="Tutup notifikasi"
       >
-        <X size={15} />
+        <X size={15} weight="bold" />
       </button>
     </div>
   );

@@ -44,18 +44,21 @@ export const Dropdown: React.FC<DropdownProps> = ({
       <div onClick={() => setIsOpen(!isOpen)}>{trigger}</div>
       {isOpen && (
         <div
-          className={`absolute top-[calc(100%+6px)] min-w-[180px] p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 animate-scaleIn ${
+          role="menu"
+          aria-orientation="vertical"
+          className={`absolute top-[calc(100%+6px)] min-w-45 p-1 bg-card border border-line rounded-xl shadow-xl z-50 animate-scaleIn ${
             align === 'left' ? 'left-0' : 'right-0'
           }`}
         >
           {items.map((item) => (
             <button
               key={item.id}
+              role="menuitem"
               type="button"
-              className={`flex items-center gap-2.5 w-full px-3 py-2 text-xs font-medium rounded-lg transition-colors text-left ${
+              className={`flex items-center gap-2.5 w-full px-3 py-2 text-xs font-medium rounded-lg transition-colors text-left cursor-pointer ${
                 item.isDanger
-                  ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40'
-                  : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400'
+                  ? 'text-danger hover:bg-danger-bg'
+                  : 'text-ink-secondary hover:bg-muted hover:text-ink'
               }`}
               onClick={() => {
                 item.onClick();

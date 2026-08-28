@@ -1,5 +1,5 @@
-import React from 'react';
-import { X } from 'lucide-react';
+import React, { useId } from 'react';
+import { X } from '@phosphor-icons/react';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -8,11 +8,14 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   iconPrefix?: React.ReactNode;
   iconSuffix?: React.ReactNode;
   onClear?: () => void;
+  containerClassName?: string;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
+      id,
+      name,
       label,
       error,
       helperText,
@@ -20,56 +23,68 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       iconSuffix,
       onClear,
       className = '',
+      containerClassName = '',
       value,
       ...props
     },
     ref
   ) => {
+    const generatedId = useId();
+    const inputId = id || generatedId;
+    const inputName = name || inputId;
+
     return (
-      <div className={`flex flex-col gap-1.5 w-full ${className}`}>
+      <div className={`flex flex-col gap-1.5 w-full ${containerClassName}`}>
         {label && (
-          <label className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+          <label
+            htmlFor={inputId}
+            className="block text-xs font-semibold uppercase tracking-wider text-ink cursor-pointer select-none"
+          >
             {label}
           </label>
         )}
         <div
-          className={`flex items-center w-full bg-white dark:bg-slate-900 border rounded-lg transition-all duration-150 ${
+          className={`flex items-center w-full h-11 bg-canvas rounded-lg transition-all duration-150 ${
             error
-              ? 'border-red-500 ring-2 ring-red-500/10'
-              : 'border-slate-200 dark:border-slate-800 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20'
+              ? 'border border-danger ring-1 ring-danger'
+              : 'border border-line focus-within:ring-1 focus-within:ring-ink'
           }`}
         >
           {iconPrefix && (
-            <div className="pl-3 flex items-center text-slate-400 dark:text-slate-500">
+            <div className="pl-3.5 flex items-center shrink-0">
               {iconPrefix}
             </div>
           )}
           <input
             ref={ref}
+            id={inputId}
+            name={inputName}
             value={value}
-            className="w-full px-3 py-2 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 bg-transparent border-none outline-none"
+            className={`w-full h-full text-sm bg-transparent border-none outline-none ${
+              iconPrefix ? 'pl-2' : 'pl-3.5'
+            } ${iconSuffix || onClear ? 'pr-2' : 'pr-3.5'} ${className}`}
             {...props}
           />
           {onClear && value ? (
             <button
               type="button"
               onClick={onClear}
-              className="pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className="pr-3.5 flex items-center text-ink-muted hover:text-ink transition-colors cursor-pointer"
               aria-label="Hapus teks"
             >
               <X size={16} />
             </button>
           ) : (
             iconSuffix && (
-              <div className="pr-3 flex items-center text-slate-400 dark:text-slate-500">
+              <div className="pr-3.5 flex items-center shrink-0">
                 {iconSuffix}
               </div>
             )
           )}
         </div>
-        {error && <span className="text-xs font-medium text-red-500">{error}</span>}
+        {error && <span className="text-xs font-medium text-danger">{error}</span>}
         {!error && helperText && (
-          <span className="text-xs text-slate-500 dark:text-slate-400">
+          <span className="text-xs text-ink-muted">
             {helperText}
           </span>
         )}

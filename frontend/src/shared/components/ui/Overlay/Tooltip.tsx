@@ -21,7 +21,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
     >
       {children}
       {isVisible && (
-        <div className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 px-2.5 py-1 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-[11px] font-medium rounded-md shadow-lg pointer-events-none z-50 whitespace-nowrap animate-fadeIn">
+        <div className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 px-2.5 py-1 bg-brand text-ink-inverse text-[11px] font-medium rounded-md shadow-lg pointer-events-none z-50 whitespace-nowrap animate-fadeIn">
           {content}
         </div>
       )}

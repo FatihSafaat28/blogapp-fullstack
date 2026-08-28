@@ -1,5 +1,6 @@
 import { prisma } from '../../config/prisma.js';
 import { AppError } from '../../middlewares/error.middleware.js';
+import { mediaService } from '../media/media.service.js';
 import { UpdateProfileInput } from './users.schema.js';
 
 export class UsersService {
@@ -53,6 +54,13 @@ export class UsersService {
 
     if (!existingUser) {
       throw new AppError('Pengguna tidak ditemukan.', 404);
+    }
+
+    // Jika avatar diperbarui atau dihapus, bersihkan file avatar lama dari server
+    if (data.avatar !== undefined && data.avatar !== existingUser.avatar) {
+      if (existingUser.avatar) {
+        await mediaService.deleteFileIfExists(existingUser.avatar);
+      }
     }
 
     const updatedUser = await prisma.user.update({

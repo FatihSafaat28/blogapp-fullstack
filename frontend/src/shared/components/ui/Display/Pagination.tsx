@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 
 export interface PaginationProps {
   currentPage: number;
@@ -22,25 +22,25 @@ export const Pagination: React.FC<PaginationProps> = ({
     >
       <button
         type="button"
-        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm font-medium text-slate-700 dark:text-slate-200 hover:border-indigo-500 hover:text-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 shadow-sm"
+        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-card border border-line text-sm font-medium text-ink-secondary hover:text-ink hover:border-ink-muted disabled:opacity-40 transition-all duration-150 shadow-xs cursor-pointer"
         disabled={currentPage <= 1}
         onClick={() => onPageChange(currentPage - 1)}
       >
-        <ChevronLeft size={16} /> Sebelumnya
+        <CaretLeft size={16} weight="bold" /> Sebelumnya
       </button>
 
-      <span className="text-sm font-medium text-slate-600 dark:text-slate-400 px-3">
-        Halaman <strong className="text-slate-900 dark:text-slate-100">{currentPage}</strong> dari{' '}
-        <strong className="text-slate-900 dark:text-slate-100">{totalPages}</strong>
+      <span className="text-sm font-medium text-ink-secondary px-3">
+        Halaman <strong className="text-ink">{currentPage}</strong> dari{' '}
+        <strong className="text-ink">{totalPages}</strong>
       </span>
 
       <button
         type="button"
-        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm font-medium text-slate-700 dark:text-slate-200 hover:border-indigo-500 hover:text-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 shadow-sm"
+        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-card border border-line text-sm font-medium text-ink-secondary hover:text-ink hover:border-ink-muted disabled:opacity-40 transition-all duration-150 shadow-xs cursor-pointer"
         disabled={currentPage >= totalPages}
         onClick={() => onPageChange(currentPage + 1)}
       >
-        Selanjutnya <ChevronRight size={16} />
+        Selanjutnya <CaretRight size={16} weight="bold" />
       </button>
     </div>
   );

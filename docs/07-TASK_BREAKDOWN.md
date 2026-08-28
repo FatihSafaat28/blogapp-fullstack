@@ -90,11 +90,8 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 
 ### 🎨 Phase 3: Frontend Foundation & Shared Design Tokens
 
-- [x] **Task 3.1: CSS Design Tokens & Typography**
-  - `frontend/src/styles/variables.css`: Palette warna (Light & Dark), Glassmorphism, Radii, Shadows, Spacing.
-  - `frontend/src/styles/typography.css`: Font _Outfit_ & _Inter_, fluid type scale (`clamp()`), reader prose styles.
-  - `frontend/src/styles/reset.css` & `animations.css`: Modern CSS reset dan micro-animations.
-  - `frontend/src/styles/index.css`: Penggabungan seluruh design tokens dan global layout containers.
+- [x] **Task 3.1: CSS Design Tokens & Typography (Single index.css Consolidation)**
+  - `frontend/src/styles/index.css`: Penyatuan seluruh Design Tokens HSL (Light & Dark theme), Glassmorphism (`--bg-glass`), fluid typography scale, reader prose (`.prose-reader`), dan keyframes animasi dalam satu file tunggal (~190 LOC) tanpa file reset eksternal yang konflik.
 - [x] **Task 3.2: API Client, Query Client & Auth Store**
   - `frontend/src/features/auth/types/auth.types.ts`: TypeScript interfaces (`User`, `AuthResponse`, `ApiResponse`).
   - `frontend/src/shared/api/apiClient.ts`: Axios instance dengan `withCredentials: true`, interceptors auto refresh token saat 401.
@@ -123,26 +120,22 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 ---
 
 ### 👤 Phase 4: Frontend Auth & User Profile Features
-
-- [ ] **Task 4.1: Auth State & Context Integration**
-  - Zustand auth store (`useAuthStore`) integrasi dengan form handler.
-- [ ] **Task 4.2: Login Page (`/login`) - MVP Pattern**
-  - Model: `auth.api.ts`.
+ 
+- [x] **Task 4.1: Auth State & Context Integration**
+  - Zustand auth store (`useAuthStore`) integrasi dengan form handler dan auto-refresh token.
+- [x] **Task 4.2: Login Page (`/login`) - MVP Pattern**
+  - Model: `authApi.ts`.
   - Presenter: `useLoginPresenter.ts` (React Hook Form + Zod).
-  - View: `LoginPage.tsx` & `LoginFormView.tsx` (Pure Tailwind CSS).
-- [ ] **Task 4.3: Register Page (`/register`) - MVP Pattern**
+  - View: `LoginPage.tsx` & `LoginFormView.tsx` (Pure Tailwind CSS v4 semantic tokens).
+- [x] **Task 4.3: Register Page (`/register`) - MVP Pattern**
   - Presenter: `useRegisterPresenter.ts`.
-  - View: `RegisterPage.tsx` & `RegisterFormView.tsx` (Pure Tailwind CSS).
-- [ ] **Task 4.4: Profile & Blog Settings Page (`/dashboard/settings`)**
-  - Presenter: `useSettingsPresenter.ts` (Update avatar, bio, custom blog title, social links).
-  - View: `SettingsPage.tsx`, `ProfileFormView.tsx`, `BlogAppearanceView.tsx` (Pure Tailwind CSS).eLoginPresenter.ts` (React Hook Form + Zod).
-  - View: `LoginPage.tsx` & `LoginFormView.tsx` + `Auth.module.css`.
-- [ ] **Task 4.3: Register Page (`/register`) - MVP Pattern**
-  - Presenter: `useRegisterPresenter.ts`.
-  - View: `RegisterPage.tsx` & `RegisterFormView.tsx`.
-- [ ] **Task 4.4: Profile & Blog Settings Page (`/dashboard/settings`)**
-  - Presenter: `useSettingsPresenter.ts` (Update avatar, bio, custom blog title, social links).
-  - View: `SettingsPage.tsx`, `ProfileFormView.tsx`, `BlogAppearanceView.tsx`.
+  - View: `RegisterPage.tsx` & `RegisterFormView.tsx` (Pure Tailwind CSS v4 semantic tokens).
+- [x] **Task 4.4: Profile & Blog Settings Page (`/dashboard/settings`) - MVP Pattern**
+  - Model: `settingsApi.ts` (`PATCH /api/users/profile`, `POST /api/media/upload`).
+  - Presenter: `useSettingsPresenter.ts` (React Hook Form, Zod validation, Deferred Avatar Upload via `URL.createObjectURL` instant preview, tab state, toast feedback).
+  - Views: `SettingsPage.tsx`, `ProfileFormView.tsx`, `BlogIdentityView.tsx` (Substack Live Card Preview), `SocialLinksView.tsx` (100% konsumsi komponen UI Kit).
+  - Storage Optimization & Auto-Cleanup: Content Hashing SHA-256 (`img-[sha256].webp`) anti-duplikasi dan otomatis menghapus foto avatar lama dari disk saat avatar baru disimpan/dihapus.
+  - A11y & Form Standards: 100% Form binding `useId()`, `aria-label`, WAI-ARIA roles, dan migrasi menyeluruh ke `@phosphor-icons/react`.
 
 ---
 

@@ -6,14 +6,14 @@ import { Avatar } from '../ui/Display/Avatar';
 import { Dropdown } from '../ui/Overlay/Dropdown';
 import { ThemeToggle } from '../ui/Theme/ThemeToggle';
 import {
-  Feather,
-  PenSquare,
-  LayoutDashboard,
-  User,
-  Settings,
-  LogOut,
+  PenNib,
   Compass,
-} from 'lucide-react';
+  SquaresFour,
+  User as UserIcon,
+  Gear,
+  SignOut,
+  NotePencil,
+} from '@phosphor-icons/react';
 
 export const PublicNavbar: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
@@ -27,65 +27,67 @@ export const PublicNavbar: React.FC = () => {
   const userMenuItems = [
     {
       id: 'dashboard',
-      label: 'Dashboard Studio',
-      icon: <LayoutDashboard size={15} />,
+      label: 'Studio Tulisan',
+      icon: <SquaresFour size={15} />,
       onClick: () => navigate('/dashboard/posts'),
     },
     {
       id: 'profile',
-      label: `Profil Saya (@${user?.username || ''})`,
-      icon: <User size={15} />,
+      label: `Profil Publik (@${user?.username || ''})`,
+      icon: <UserIcon size={15} />,
       onClick: () => navigate(`/@${user?.username}`),
     },
     {
       id: 'settings',
-      label: 'Pengaturan Akun',
-      icon: <Settings size={15} />,
+      label: 'Pengaturan Blog',
+      icon: <Gear size={15} />,
       onClick: () => navigate('/dashboard/settings'),
     },
     {
       id: 'logout',
       label: 'Keluar',
-      icon: <LogOut size={15} />,
+      icon: <SignOut size={15} />,
       isDanger: true,
       onClick: handleLogout,
     },
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-        {/* Brand Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-sm shadow-indigo-500/25 group-hover:scale-105 transition-transform">
-            <Feather size={19} />
-          </div>
-          <span className="font-heading font-extrabold text-xl tracking-tight text-slate-900 dark:text-slate-100">
-            Avian<span className="text-indigo-600 dark:text-indigo-400">.</span>
-          </span>
-        </Link>
+    <header className="sticky top-0 z-40 w-full bg-glass backdrop-blur-md border-b border-line transition-colors">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 relative flex items-center justify-between">
+        {/* Left Side: Brand Logo */}
+        <div className="flex items-center">
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="w-8 h-8 rounded-lg bg-brand text-ink-inverse flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+              <PenNib weight="bold" size={17} />
+            </div>
+            <span className="font-heading font-bold text-xl tracking-tight text-ink">
+              Avian<span className="text-ink-muted">.</span>
+            </span>
+          </Link>
+        </div>
 
-        {/* Center Links */}
-        <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600 dark:text-slate-400">
+        {/* Center: True Absolute Center Nav */}
+        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center text-sm font-medium text-ink-secondary">
           <Link
             to="/"
-            className="flex items-center gap-1.5 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-ink hover:bg-muted transition-colors"
           >
-            <Compass size={16} /> Explore Feed
+            <Compass size={17} /> Jelajahi Cerita
           </Link>
         </nav>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-3">
+        {/* Right Side: Actions & Theme Toggle */}
+        <div className="flex items-center gap-2.5">
           <ThemeToggle />
 
           {isAuthenticated && user ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <Link to="/editor/new" className="hidden sm:inline-block">
                 <Button
                   variant="primary"
                   size="sm"
-                  iconPrefix={<PenSquare size={14} />}
+                  iconPrefix={<NotePencil size={14} weight="bold" />}
                 >
                   Tulis Cerita
                 </Button>
@@ -93,7 +95,12 @@ export const PublicNavbar: React.FC = () => {
 
               <Dropdown
                 trigger={
-                  <button className="flex items-center cursor-pointer rounded-full ring-2 ring-transparent hover:ring-indigo-500/30 transition-all">
+                  <button
+                    type="button"
+                    className="flex items-center cursor-pointer rounded-full ring-2 ring-transparent hover:ring-line transition-all"
+                    aria-label="Menu akun pengguna"
+                    aria-haspopup="menu"
+                  >
                     <Avatar
                       src={user.avatar}
                       name={user.fullName || user.username}

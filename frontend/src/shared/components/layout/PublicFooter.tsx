@@ -1,44 +1,55 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Feather, Heart } from 'lucide-react';
+import { PenNib, Heart } from '@phosphor-icons/react';
 
 export const PublicFooter: React.FC = () => {
   return (
-    <footer className="w-full border-t border-slate-200/80 dark:border-slate-800/80 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm py-12 mt-auto">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
-        {/* Brand */}
-        <div className="flex flex-col items-center md:items-start gap-2">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
-              <Feather size={15} />
+    <footer className="w-full border-t border-line bg-canvas py-14 mt-auto transition-colors">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        {/* Top Tier: Clean Editorial Identity */}
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pb-10 border-b border-line-subtle">
+          <div className="max-w-sm">
+            <Link to="/" className="flex items-center gap-2 mb-3">
+              <div className="w-6 h-6 rounded bg-brand text-ink-inverse flex items-center justify-center">
+                <PenNib weight="bold" size={14} />
+              </div>
+              <span className="font-heading font-bold text-lg tracking-tight text-ink">
+                Avian Blog
+              </span>
+            </Link>
+            <p className="text-xs text-ink-secondary leading-relaxed">
+              Platform publikasi tulisan bergaya editorial tenang. Dibuat untuk menghargai gagasan berkualitas dan kenyamanan membaca tanpa distraksi.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-8 text-xs font-medium text-ink-secondary">
+            <div className="flex flex-col gap-2.5">
+              <span className="text-ink font-semibold uppercase tracking-wider text-[11px]">
+                Navigasi
+              </span>
+              <Link to="/" className="hover:text-ink transition-colors">
+                Beranda
+              </Link>
+              <Link to="/login" className="hover:text-ink transition-colors">
+                Studio Penulis
+              </Link>
+              <Link to="/register" className="hover:text-ink transition-colors">
+                Mulai Menulis
+              </Link>
             </div>
-            <span className="font-heading font-bold text-lg text-slate-900 dark:text-slate-100">
-              Avian Blog
-            </span>
-          </Link>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm">
-            Platform penerbitan artikel modern untuk para kreator, pemikir, dan pembaca berkelas.
-          </p>
+          </div>
         </div>
 
-        {/* Links */}
-        <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-medium text-slate-600 dark:text-slate-400">
-          <Link to="/" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-            Beranda
-          </Link>
-          <Link to="/login" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-            Masuk Creator
-          </Link>
-          <Link to="/register" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-            Daftar Penulis
-          </Link>
-        </div>
-
-        {/* Copyright */}
-        <div className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1 justify-center">
-          <span>Dibuat dengan</span>
-          <Heart size={12} className="text-rose-500 fill-rose-500" />
-          <span>menggunakan PERN Stack</span>
+        {/* Bottom Tier: Copyright & Taste Signature */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 text-xs text-ink-muted">
+          <div>
+            © {new Date().getFullYear()} Avian Blog. Seluruh hak cipta dilindungi.
+          </div>
+          <div className="flex items-center gap-1">
+            <span>Didesain dengan</span>
+            <Heart weight="fill" size={13} className="text-danger inline" />
+            <span>untuk para penulis mandiri.</span>
+          </div>
         </div>
       </div>
     </footer>

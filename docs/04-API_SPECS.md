@@ -237,18 +237,110 @@ Dokumen ini mendefinisikan seluruh kontrak endpoint REST API, parameter, skema v
 * **Endpoint**: `POST /api/media/upload`
 * **Access**: Private (`authGuard`, Multipart Form Data: `file`)
 * **Validasi**: Mime types (`image/jpeg`, `image/png`, `image/webp`, `image/gif`), batas ukuran maksimal 5MB.
-* **Auto-Conversion & Optimization**:
+* **Auto-Conversion, Optimization & Anti-Duplikasi**:
   * Menggunakan library **`sharp`** untuk mengonversi gambar (JPG, PNG) menjadi format **WebP** secara otomatis.
   * Optimasi dimensi: *Max width* 1600px (menjaga rasio aspek), *quality* 80.
-  * File GIF tetap dipertahankan formatnya jika mengandung animasi.
-  * Hasil file disimpan di direktori `backend/uploads/` dengan penamaan unik `img-[timestamp]-[random].webp`.
+  * **Content Hashing SHA-256**: Penamaan file menggunakan checksum hash isi gambar `img-[sha256].webp` untuk mencegah duplikasi storage pada gambar yang identik.
+  * File GIF tetap dipertahankan formatnya jika mengandung animasi (`img-[sha256].gif`).
+  * Hasil file disimpan di direktori `backend/uploads/`.
+* **Response (201 Created)**:
+  ```json
+  {
+    "success": true,
+    "message": "Gambar berhasil diunggah dan dikonversi ke WebP teroptimasi.",
+    "data": {
+      "url": "/uploads/img-3d7cae3cd54ce72d.webp",
+      "filename": "img-3d7cae3cd54ce72d.webp",
+      "mimetype": "image/webp",
+      "size": 12484
+    }
+  }
+  ```
+
+---
+
+## 5. 👤 Modul Pengguna & Profil (`/api/users`)
+
+### A. Dapatkan Profil Publik Kreator (Substack-Style)
+* **Endpoint**: `GET /api/users/public/:username`
+* **Access**: Public
 * **Response (200 OK)**:
   ```json
   {
     "success": true,
     "data": {
-      "url": "/uploads/img-1724581234-a1b2c3.webp",
-      "filename": "img-1724581234-a1b2c3.webp"
+      "profile": {
+        "id": "uuid",
+        "fullName": "Fatih Safaat",
+        "username": "fatih",
+        "bio": "Catatan rekayasa sistem dan desain arsitektur...",
+        "avatar": "/uploads/img-3d7cae3cd54ce72d.webp",
+        "blogTitle": "Catatan Arsitektur Fatih",
+        "socialTwitter": "fatihsafaat",
+        "socialGithub": "fatihsafaat",
+        "socialLinkedin": "fatihsafaat",
+        "totalPublishedPosts": 12,
+        "joinedAt": "2026-08-26T00:00:00.000Z"
+      }
     }
   }
   ```
+
+### B. Perbarui Profil & Identitas Blog (Settings)
+* **Endpoint**: `PATCH /api/users/profile`
+* **Access**: Private (`authGuard`)
+* **Request Body**:
+  ```json
+  {
+    "fullName": "Fatih Safaat",
+    "bio": "Bio baru...",
+    "avatar": "/uploads/img-3d7cae3cd54ce72d.webp",
+    "blogTitle": "Catatan Arsitektur Fatih",
+    "socialTwitter": "fatihsafaat",
+    "socialGithub": "fatihsafaat",
+    "socialLinkedin": "fatihsafaat"
+  }
+  ```
+* **Auto-Cleanup Storage**: Backend otomatis menghapus file foto avatar lama pengguna dari folder `backend/uploads/` saat avatar baru disimpan atau saat avatar dihapus (`null`).
+* **Response (200 OK)**:
+  ```json
+  {
+    "success": true,
+    "message": "Profil berhasil diperbarui.",
+    "data": {
+      "user": {
+        "id": "uuid",
+        "fullName": "Fatih Safaat",
+        "username": "fatih",
+        "email": "fatih@example.com",
+        "bio": "Bio baru...",
+        "avatar": "/uploads/img-3d7cae3cd54ce72d.webp",
+        "blogTitle": "Catatan Arsitektur Fatih",
+        "socialTwitter": "fatihsafaat",
+        "socialGithub": "fatihsafaat",
+        "socialLinkedin": "fatihsafaat",
+        "createdAt": "2026-08-26T00:00:00.000Z",
+        "updatedAt": "2026-08-28T00:00:00.000Z"
+      }
+    }
+  }
+  ```
+
+### C. Dapatkan Ringkasan Statistik Akun (Sidebar Mini Stats)
+* **Endpoint**: `GET /api/users/me/stats`
+* **Access**: Private (`authGuard`)
+* **Response (200 OK)**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "stats": {
+        "totalPosts": 15,
+        "publishedPosts": 12,
+        "draftPosts": 3,
+        "totalViews": 4580
+      }
+    }
+  }
+  ```
+

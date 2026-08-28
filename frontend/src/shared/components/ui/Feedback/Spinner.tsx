@@ -3,11 +3,13 @@ import React from 'react';
 export interface SpinnerProps extends React.SVGAttributes<SVGSVGElement> {
   size?: 'sm' | 'md' | 'lg';
   color?: 'primary' | 'current';
+  label?: string;
 }
 
 export const Spinner: React.FC<SpinnerProps> = ({
   size = 'md',
   color = 'primary',
+  label = 'Memuat...',
   className = '',
   ...props
 }) => {
@@ -17,10 +19,12 @@ export const Spinner: React.FC<SpinnerProps> = ({
     lg: 'w-9 h-9',
   }[size];
 
-  const colorStyles = color === 'primary' ? 'text-indigo-600 dark:text-indigo-400' : 'text-current';
+  const colorStyles = color === 'primary' ? 'text-brand' : 'text-current';
 
   return (
     <svg
+      role="status"
+      aria-label={label}
       className={`animate-spin ${sizeStyles} ${colorStyles} ${className}`}
       viewBox="0 0 24 24"
       fill="none"

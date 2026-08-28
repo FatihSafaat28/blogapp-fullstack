@@ -52,6 +52,27 @@ Setiap kali kamu berada pada sesi chat baru atau menerima tugas baru, kamu **WAJ
 * Jika tokomu mengubah skema database, perbarui `docs/03-DATABASE.md`.
 * Jika tokomu menambahkan atau memodifikasi endpoint API, perbarui `docs/04-API_SPECS.md`.
 
+### F. Standar Desain Visual & Anti-Slop (Wajib Dipatuhi)
+* **Palet Warna**: Dilarang menggunakan biru gelap elektrik / AI neon gradient. Gunakan **Warm Alabaster** (`#FAF9F6`) & Pure White untuk Light mode, serta **Matte Charcoal** (`#121214`) & Ink Obsidian (`#18181B`) untuk Dark mode.
+* **Tipografi**:
+  - `font-serif`: **Newsreader** (Judul H1/H2, manifesto, editorial feel).
+  - `font-sans`: **Inter** / **Outfit** (UI elements, labels, buttons).
+  - `font-mono`: **JetBrains Mono** (Slug URL, meta badges, tags).
+* **Iconography**: Wajib menggunakan **Phosphor Icons** (`@phosphor-icons/react`). Dilarang mencampur icon pack.
+* **UX Writing**: Gunakan gaya bahasa Indonesia yang hangat, menyambut, dan manusiawi (*friendly UX*).
+
+### G. Protokol Wajib: Component-First
+* Sebelum membuat halaman, form, atau view baru, **WAJIB mengecek katalog komponen di `src/shared/components/ui/`** (lihat daftar lengkap di `docs/05-DESIGN_AND_UIUX.md`).
+* **Dilarang** menulis tag HTML dasar manual (`<button>`, `<input>`, `<select>`, `<textarea>`, alert div, avatar img, badge pill, modal) jika sudah ada komponen UI resminya. Selalu utamakan konsistensi dan reusability.
+
+### H. Standar Aksesibilitas Web (a11y) & Form Best Practices
+* **Form Association**: Setiap form control (`<input>`, `<textarea>`, `<select>`) **WAJIB terhubung dengan `<label>`** via `htmlFor={id}` dan memiliki atribut `id` serta `name` (gunakan `React.useId()` untuk auto-generation).
+* **Accessible Names**: Tombol yang hanya berisi ikon (*icon-only button*) **WAJIB memiliki atribut `aria-label`** (contoh: `aria-label="Tutup dialog"`, `aria-label="Menu akun"`).
+* **Semantic ARIA Roles**:
+  - Modal / Drawer wajib menggunakan `role="dialog"` dan `aria-modal="true"`.
+  - Tab navigator wajib menggunakan `role="tablist"`, tombol tab `role="tab"`, dan status `aria-selected`.
+  - Loading spinner SVG wajib menggunakan `role="status"` dan `aria-label="Memuat..."`.
+
 ---
 
 ## 🌐 3. Integrasi & Perawatan Graphify

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link2, Check, Twitter, Linkedin } from 'lucide-react';
+import { Link, Check, TwitterLogo, LinkedinLogo } from '@phosphor-icons/react';
 
 export interface ShareButtonsProps {
   url?: string;
@@ -42,35 +42,35 @@ export const ShareButtons: React.FC<ShareButtonsProps> = ({
     <div className={`flex items-center gap-2 flex-wrap ${className}`}>
       <button
         type="button"
-        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 shadow-sm ${
+        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 shadow-xs cursor-pointer ${
           copied
-            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border-emerald-300 dark:border-emerald-700'
-            : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-indigo-500 hover:text-indigo-600'
+            ? 'bg-success-bg text-success border-success-border'
+            : 'bg-card text-ink-secondary border-line hover:border-ink hover:text-ink'
         }`}
         onClick={handleCopyLink}
         title="Salin Tautan"
       >
-        {copied ? <Check size={14} /> : <Link2 size={14} />}
+        {copied ? <Check size={14} weight="bold" /> : <Link size={14} />}
         <span>{copied ? 'Tersalin! ✅' : 'Salin Tautan'}</span>
       </button>
 
       <button
         type="button"
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 hover:text-indigo-600 transition-all duration-150 shadow-sm"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-card text-ink-secondary border border-line hover:border-ink hover:text-ink transition-all duration-150 shadow-xs cursor-pointer"
         onClick={handleTwitterShare}
         title="Bagikan ke Twitter / X"
       >
-        <Twitter size={14} />
+        <TwitterLogo size={14} />
         <span>Twitter</span>
       </button>
 
       <button
         type="button"
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 hover:text-indigo-600 transition-all duration-150 shadow-sm"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-card text-ink-secondary border border-line hover:border-ink hover:text-ink transition-all duration-150 shadow-xs cursor-pointer"
         onClick={handleLinkedinShare}
         title="Bagikan ke LinkedIn"
       >
-        <Linkedin size={14} />
+        <LinkedinLogo size={14} />
         <span>LinkedIn</span>
       </button>
     </div>

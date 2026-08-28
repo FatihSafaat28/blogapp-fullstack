@@ -7,7 +7,7 @@ export const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex bg-slate-50/60 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex bg-canvas text-ink transition-colors">
       {/* Desktop Fixed Sidebar */}
       <div className="hidden lg:block fixed inset-y-0 left-0 z-40 w-64">
         <DashboardSidebar />
@@ -16,7 +16,7 @@ export const DashboardLayout: React.FC = () => {
       {/* Mobile Drawer Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs lg:hidden animate-fadeIn"
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs lg:hidden animate-fadeIn"
           onClick={() => setSidebarOpen(false)}
         >
           <div

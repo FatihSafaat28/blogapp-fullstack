@@ -61,6 +61,17 @@ frontend/src/features/dashboard/posts/
     └── PostEditorPage.tsx
 ```
 
+### 🚨 Aturan Wajib: Component-First
+Sebelum menyusun JSX di file View atau Page:
+1. Cek folder `src/shared/components/ui/` (atau katalog di `docs/05-DESIGN_AND_UIUX.md`).
+2. Gunakan komponen UI yang telah disediakan (`Button`, `Input`, `Select`, `Textarea`, `Checkbox`, `TagInput`, `ImageUpload`, `Avatar`, `Badge`, `Card`, `Tabs`, `Pagination`, `Divider`, `EmptyState`, `ShareButtons`, `Modal`, `Drawer`, `Dropdown`, `Tooltip`, `Alert`, `Spinner`, `Skeleton`, `ReadingProgressBar`, `ThemeToggle`, `Toast`).
+3. Dilarang menulis tag input/button/alert/badge/modal secara manual jika sudah tersedia komponen resminya.
+
+### ♿ Standar Aksesibilitas (a11y) & HTML Best Practice:
+1. **Form & Label Binding**: Seluruh elemen form wajib memiliki keterkaitan label eksplisit menggunakan `htmlFor` dan `id` (dikelola otomatis oleh `useId()` pada komponen atom `Input`, `Textarea`, `Select`, `TagInput`, `ImageUpload`).
+2. **Accessible Names**: Setiap tombol yang hanya menampilkan ikon (*icon-only button*) wajib memiliki atribut `aria-label` yang deskriptif.
+3. **WAI-ARIA Roles**: Dialog modal/drawer wajib menyematkan `role="dialog"` dan `aria-modal="true"`; tabs wajib `role="tablist"` dan `role="tab"`; status loading wajib `role="status"`.
+
 ---
 
 ## 3. ⚙️ Backend Architecture: Feature-based Modular Layer

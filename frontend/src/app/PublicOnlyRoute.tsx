@@ -10,7 +10,7 @@ export const PublicOnlyRoute: React.FC<{ children?: React.ReactNode }> = ({
 
   if (isLoading || !isInitialized) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-canvas text-ink-secondary">
         <Spinner size="lg" color="primary" />
         <span className="text-sm font-semibold animate-pulse">
           Memeriksa sesi...

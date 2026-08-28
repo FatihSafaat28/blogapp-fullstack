@@ -1,18 +1,18 @@
 import React from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
+import {
+  PenNib,
+  NotePencil,
+  Article,
+  ChartLineUp,
+  Gear,
+  ArrowSquareOut,
+  SignOut,
+  X,
+} from '@phosphor-icons/react';
 import { useAuthStore } from '../../../features/auth/stores/authStore';
 import { Avatar } from '../ui/Display/Avatar';
 import { Button } from '../ui/Form/Button';
-import {
-  Feather,
-  PenSquare,
-  FileText,
-  BarChart3,
-  Settings,
-  ExternalLink,
-  LogOut,
-  X,
-} from 'lucide-react';
 
 export const DashboardSidebar: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   const { user, logout } = useAuthStore();
@@ -24,25 +24,25 @@ export const DashboardSidebar: React.FC<{ onClose?: () => void }> = ({ onClose }
   };
 
   const navItems = [
-    { to: '/dashboard/posts', label: 'Semua Artikel', icon: <FileText size={18} /> },
-    { to: '/dashboard/analytics', label: 'Statistik & Analitik', icon: <BarChart3 size={18} /> },
-    { to: '/dashboard/settings', label: 'Pengaturan Blog', icon: <Settings size={18} /> },
+    { to: '/dashboard/posts', label: 'Semua Artikel', icon: <Article size={18} /> },
+    { to: '/dashboard/analytics', label: 'Statistik & Analitik', icon: <ChartLineUp size={18} /> },
+    { to: '/dashboard/settings', label: 'Pengaturan Blog', icon: <Gear size={18} /> },
   ];
 
   return (
-    <aside className="w-64 h-full bg-white dark:bg-slate-900 border-r border-slate-200/80 dark:border-slate-800/80 flex flex-col justify-between p-4 select-none transition-colors">
+    <aside className="w-64 h-full bg-card border-r border-line flex flex-col justify-between p-4 select-none transition-colors">
       <div className="flex flex-col gap-6">
         {/* Studio Brand */}
         <div className="flex items-center justify-between px-2">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-sm shadow-indigo-500/25">
-              <Feather size={17} />
+            <div className="w-8 h-8 rounded-xl bg-brand flex items-center justify-center text-ink-inverse shadow-xs">
+              <PenNib size={17} weight="bold" />
             </div>
             <div className="flex flex-col">
-              <span className="font-heading font-extrabold text-base tracking-tight text-slate-900 dark:text-slate-100">
-                Avian<span className="text-indigo-600 dark:text-indigo-400">.</span>
+              <span className="font-heading font-extrabold text-base tracking-tight text-ink">
+                Avian<span className="text-ink-muted">.</span>
               </span>
-              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+              <span className="text-[10px] font-semibold text-ink-muted uppercase tracking-wider">
                 Creator Studio
               </span>
             </div>
@@ -51,7 +51,7 @@ export const DashboardSidebar: React.FC<{ onClose?: () => void }> = ({ onClose }
           {onClose && (
             <button
               type="button"
-              className="lg:hidden p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+              className="lg:hidden p-1 text-ink-muted hover:text-ink rounded-lg cursor-pointer"
               onClick={onClose}
               aria-label="Tutup menu"
             >
@@ -62,7 +62,7 @@ export const DashboardSidebar: React.FC<{ onClose?: () => void }> = ({ onClose }
 
         {/* Action Button */}
         <Link to="/editor/new" onClick={onClose}>
-          <Button variant="primary" size="md" fullWidth iconPrefix={<PenSquare size={16} />}>
+          <Button variant="primary" size="md" fullWidth iconPrefix={<NotePencil size={16} weight="bold" />}>
             Tulis Artikel Baru
           </Button>
         </Link>
@@ -77,8 +77,8 @@ export const DashboardSidebar: React.FC<{ onClose?: () => void }> = ({ onClose }
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 ${
                   isActive
-                    ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
+                    ? 'bg-muted text-ink border border-line'
+                    : 'text-ink-secondary hover:bg-muted/60 hover:text-ink'
                 }`
               }
             >
@@ -90,34 +90,34 @@ export const DashboardSidebar: React.FC<{ onClose?: () => void }> = ({ onClose }
       </div>
 
       {/* User Footer */}
-      <div className="flex flex-col gap-2 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+      <div className="flex flex-col gap-2 pt-4 border-t border-line">
         {user && (
           <Link
             to={`/@${user.username}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors group"
+            className="flex items-center justify-between p-2 rounded-xl hover:bg-muted/60 transition-colors group"
             title="Buka Blog Publik"
           >
             <div className="flex items-center gap-2.5 min-w-0">
               <Avatar src={user.avatar} name={user.fullName || user.username} size="sm" />
               <div className="flex flex-col min-w-0">
-                <span className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                <span className="text-xs font-bold text-ink truncate">
                   {user.fullName || user.username}
                 </span>
-                <span className="text-[11px] text-slate-400 truncate">@{user.username}</span>
+                <span className="text-[11px] text-ink-muted truncate">@{user.username}</span>
               </div>
             </div>
-            <ExternalLink size={14} className="text-slate-400 group-hover:text-indigo-600 transition-colors shrink-0" />
+            <ArrowSquareOut size={14} className="text-ink-muted group-hover:text-ink transition-colors shrink-0" />
           </Link>
         )}
 
         <button
           type="button"
           onClick={handleLogout}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-left"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-danger hover:bg-danger-bg transition-colors text-left cursor-pointer"
         >
-          <LogOut size={15} />
+          <SignOut size={15} />
           <span>Keluar Sesi</span>
         </button>
       </div>
