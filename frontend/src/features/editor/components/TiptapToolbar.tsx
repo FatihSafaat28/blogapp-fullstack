@@ -21,6 +21,7 @@ import { ListDropdown } from './ListDropdown';
 import { LinkPopover } from './LinkPopover';
 import { HighlightPopover } from './HighlightPopover';
 import { SearchReplacePopover } from './SearchReplacePopover';
+import { TableDropdown } from './TableDropdown';
 import { ThemeToggle } from '../../../shared/components/ui/Theme/ThemeToggle';
 
 interface TiptapToolbarProps {
@@ -257,6 +258,9 @@ export const TiptapToolbar: React.FC<TiptapToolbarProps> = ({ editor, onUploadIm
           </div>
 
           <div className="w-[1px] h-5 bg-line mx-1" />
+
+          {/* 7.5 Table */}
+          <TableDropdown editor={editor} />
 
           {/* 8. Media / Image */}
           <button

@@ -4,6 +4,7 @@ import { TiptapToolbar } from './TiptapToolbar';
 import { DragContextMenu } from './DragContextMenu';
 import { SlashDropdownMenu } from './SlashDropdownMenu';
 import { ImageBubbleToolbar } from './ImageBubbleToolbar';
+import { TableNodeController } from './table/TableNodeController';
 
 interface TiptapEditorCoreProps {
   editor: Editor | null;
@@ -41,6 +42,9 @@ export const TiptapEditorCore: React.FC<TiptapEditorCoreProps> = ({
 
       {/* 3. Floating Image Controller Bubble Menu */}
       <ImageBubbleToolbar editor={editor} />
+
+      {/* 3.5 Tiptap Interactive Table Node Controller Suite */}
+      <TableNodeController editor={editor} />
 
       {/* 4. Paper Sheet Document Container (Expanded with generous ProseMirror padding) */}
       <div className="w-full max-w-5xl my-8 bg-card rounded-2xl border border-line shadow-sm px-3 sm:px-6 py-10 sm:py-16 min-h-[90vh] flex flex-col transition-colors">

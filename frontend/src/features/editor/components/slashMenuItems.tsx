@@ -7,6 +7,7 @@ import {
   CheckSquare,
   Quotes,
   CodeBlock as CodeBlockIcon,
+  Table as TableIcon,
 } from '@phosphor-icons/react';
 
 export interface SlashItem {
@@ -80,5 +81,17 @@ export const SLASH_ITEMS: SlashItem[] = [
     group: 'Blocks',
     icon: <CodeBlockIcon size={16} />,
     action: (editor) => editor.chain().focus().toggleCodeBlock().run(),
+  },
+  {
+    id: 'table',
+    title: 'Table',
+    group: 'Blocks',
+    icon: <TableIcon size={16} />,
+    action: (editor) =>
+      editor
+        .chain()
+        .focus()
+        .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+        .run(),
   },
 ];

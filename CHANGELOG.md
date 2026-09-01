@@ -528,6 +528,16 @@ Dokumen ini melacak riwayat perubahan, fitur yang telah diselesaikan, dan rencan
    - `frontend/src/features/editor/hooks/useEditorPresenter.ts`: Refactoring perampingan kode hingga 291 LOC (mematuhi batas ketat `< 300 LOC`).
    - Verifikasi build `npm run build` monorepo lulus 100% dengan 0 error.
 
+5. **Task 5.4: Tiptap Official Table Node UI Controller**:
+   - `frontend/src/features/editor/components/table/TableHandles.tsx`: Handle dinamis kapsul `...` di atas kolom dan `⋮` di samping baris aktif untuk memicu context menu.
+   - `frontend/src/features/editor/components/table/TableExtendButtons.tsx`: Batang tombol extend `+` di sisi kanan (tambah kolom) dan bawah tabel (tambah baris) ala Tiptap UI demo.
+   - `frontend/src/features/editor/components/table/TableSelectionOverlay.tsx`: Border highlight ungu dengan titik corner dot handle di sudut kanan bawah sel aktif.
+   - `frontend/src/features/editor/components/table/TableContextMenu.tsx`: Menu konteks melayang dengan flyout submenu Alignment (Left, Center, Right, Top, Middle, Bottom), Insert, Delete, Merge/Split, Toggle Header Row, dan Delete Table.
+   - `frontend/src/features/editor/components/TableDropdown.tsx`: Dropdown toolbar atas dengan Interactive 8×8 Visual Grid Matrix Selector dan menu kelola tabel aktif.
+   - `frontend/src/features/editor/hooks/useTableController.ts`: Hook pelacak koordinat `getBoundingClientRect()` dan status aktif tabel/sel.
+   - `frontend/src/features/editor/extensions/editorExtensions.ts`: Pendaftaran ekstensi modular Table, TableRow, TableHeader, TableCell (resizable: true).
+   - Verifikasi build `npm run build` monorepo lulus 100% dengan 0 error (< 250 LOC per file).
+
 ---
 
 ### 🎯 Next Steps:
