@@ -1,9 +1,9 @@
-import React from 'react';
-import { Editor } from '@tiptap/react';
-import DragHandle from '@tiptap/extension-drag-handle-react';
-import { DotsSixVertical, Plus } from '@phosphor-icons/react';
-import { NodeActionMenu } from './NodeActionMenu';
-import { useDragContextMenu } from '../hooks/useDragContextMenu';
+import React from "react";
+import { Editor } from "@tiptap/react";
+import DragHandle from "@tiptap/extension-drag-handle-react";
+import { DotsSixVertical, Plus } from "@phosphor-icons/react";
+import { NodeActionMenu } from "./NodeActionMenu";
+import { useDragContextMenu } from "../hooks/useDragContextMenu";
 
 interface DragContextMenuProps {
   editor: Editor | null;
@@ -40,15 +40,9 @@ export const DragContextMenu: React.FC<DragContextMenuProps> = ({ editor }) => {
       >
         <div
           className={`relative flex items-center transition-all duration-150 ${
-            isLineEmpty ? 'opacity-0 pointer-events-none' : 'opacity-100'
-          } ${isHoveredTable ? 'translate-y-2' : 'translate-y-0'}`}
+            isLineEmpty ? "opacity-0 pointer-events-none" : "opacity-100"
+          } ${isHoveredTable ? "translate-y-2" : "translate-y-0"}`}
         >
-          {/* Invisible mouse bridge: covers 16px gap to the right */}
-          <div
-            className="absolute top-0 bottom-0 left-full w-8 pointer-events-auto"
-            aria-hidden="true"
-          />
-
           <div className="flex items-center gap-0.5 bg-card/95 border border-line-subtle shadow-xs rounded-lg p-0.5 backdrop-blur-xs transition-transform hover:scale-105">
             {/* 1. Insert block "+" button */}
             <div className="relative group/tooltip">
@@ -72,13 +66,13 @@ export const DragContextMenu: React.FC<DragContextMenuProps> = ({ editor }) => {
               type="button"
               aria-label={
                 isHoveredTable
-                  ? 'Seret untuk memindahkan tabel'
-                  : 'Opsi blok atau seret untuk memindahkan'
+                  ? "Seret untuk memindahkan tabel"
+                  : "Opsi blok atau seret untuk memindahkan"
               }
               onMouseDown={(e) => e.stopPropagation()}
               onClick={handleToggleMenu}
               className={`p-1 rounded-md text-ink-muted/70 hover:text-ink hover:bg-muted cursor-grab active:cursor-grabbing transition-colors ${
-                isHoveredTable ? 'cursor-grab' : ''
+                isHoveredTable ? "cursor-grab" : ""
               }`}
             >
               <DotsSixVertical size={14} weight="bold" />

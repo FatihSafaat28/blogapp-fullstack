@@ -16,6 +16,7 @@ import {
   globalErrorHandler,
   notFoundHandler,
 } from "./middlewares/error.middleware.js";
+import { mediaCleanupService } from "./modules/media/media-cleanup.service.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -94,6 +95,9 @@ app.listen(PORT, () => {
   console.log(`🌐 [CORS] Accepting requests from: ${CLIENT_URL}`);
   console.log(`📁 [MEDIA] Serving static uploads from: ${uploadsPath}`);
   console.log(`📖 [STUDIO] API Studio live at: http://localhost:${PORT}/docs`);
+
+  // Start Background Media Garbage Collector
+  mediaCleanupService.startCleanupScheduler();
 });
 
 export default app;

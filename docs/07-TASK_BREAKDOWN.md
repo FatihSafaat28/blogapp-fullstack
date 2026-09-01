@@ -199,6 +199,11 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
     - `useTableDropdown.ts` & `TableDropdown.tsx` (< 185 LOC view).
     - `useImageUpload.ts` & `ImageUpload.tsx` (< 90 LOC view).
   - **Hasil Audit**: 100% file di codebase berukuran `< 280 LOC` dan build `npm run build` monorepo 100% bebas error.
+- [x] **Task 5.7: Media Storage Lifecycle & Automatic Cleanup System**
+  - Services & Scripts (< 150 LOC each):
+    - `media-cleanup.service.ts`: Deteksi file yatim dan automated background scheduler.
+    - `posts.service.ts`: Active cleanup cover & body images on post deletion.
+    - `clean_media.ts`: Dedicated CLI runner `npm run clean:media`.
 
 ---
 

@@ -550,8 +550,13 @@ Dokumen ini melacak riwayat perubahan, fitur yang telah diselesaikan, dan rencan
    - `frontend/src/shared/components/ui/Form/useImageUpload.ts` & `ImageUpload.tsx`: Ekstraksi upload logic ke presenter hook mandiri.
    - `TableContextMenu.tsx`: Perampingan flyout submenus hingga 242 LOC.
    - **Audit LOC Result**: 100% file di Frontend & Backend mematuhi batas ketat `< 300 LOC` (file terbesar hanya 277 LOC).
-   - **Build & Type-Check**: `npm run build` monorepo lulus 100% dengan 0 error.
-   - **Graphify**: Sinkronisasi ulang graf (717 nodes, 1,246 edges, 57 communities).
+
+8. **Task 5.7: Media Storage Lifecycle & Automatic Cleanup System**:
+   - `backend/src/modules/media/media-cleanup.service.ts`: Service pembersih otomatis file yatim (*orphaned media*) dengan deteksi disk vs database dan background scheduler otomatis (berjalan 5 detik pasca startup server, lalu berulang tiap 24 jam).
+   - `backend/src/modules/posts/posts.service.ts`: Integrasi active cleanup pada `deletePost()` untuk menghapus cover image dan gambar di dalam isi artikel secara instan jika sudah tidak digunakan oleh post/user lain.
+   - `backend/scripts/clean_media.ts`: Dedicated CLI command `npm run clean:media` untuk audit dan pembersihan media storage secara manual kapan pun dibutuhkan.
+   - **Build & Type-Check**: Monorepo build `tsc` & `vite build` 100% lulus bebas error.
+   - **Graphify**: Sinkronisasi knowledge graph ter-update (729 nodes, 1,265 edges, 50 communities).
 
 ---
 
