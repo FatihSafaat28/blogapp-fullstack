@@ -529,17 +529,21 @@ Dokumen ini melacak riwayat perubahan, fitur yang telah diselesaikan, dan rencan
    - Verifikasi build `npm run build` monorepo lulus 100% dengan 0 error.
 
 5. **Task 5.4: Tiptap Official Table Node UI Controller**:
-   - `frontend/src/features/editor/components/table/TableHandles.tsx`: Handle dinamis kapsul `...` di atas kolom dan `⋮` di samping baris aktif untuk memicu context menu.
+   - `frontend/src/features/editor/components/table/TableContextMenu.tsx`: Menu konteks klik kanan sel tabel dalam Bahasa Inggris lengkap dengan submenu Alignment (Left, Center, Right, Top, Middle, Bottom), Insert, Delete, Merge/Split, Toggle Header Row, dan Delete Table di posisi paling bawah dengan danger styling.
    - `frontend/src/features/editor/components/table/TableExtendButtons.tsx`: Batang tombol extend `+` di sisi kanan (tambah kolom) dan bawah tabel (tambah baris) ala Tiptap UI demo.
    - `frontend/src/features/editor/components/table/TableSelectionOverlay.tsx`: Border highlight ungu dengan titik corner dot handle di sudut kanan bawah sel aktif.
-   - `frontend/src/features/editor/components/table/TableContextMenu.tsx`: Menu konteks melayang dengan flyout submenu Alignment (Left, Center, Right, Top, Middle, Bottom), Insert, Delete, Merge/Split, Toggle Header Row, dan Delete Table.
    - `frontend/src/features/editor/components/TableDropdown.tsx`: Dropdown toolbar atas dengan Interactive 8×8 Visual Grid Matrix Selector dan menu kelola tabel aktif.
    - `frontend/src/features/editor/hooks/useTableController.ts`: Hook pelacak koordinat `getBoundingClientRect()` dan status aktif tabel/sel.
    - `frontend/src/features/editor/extensions/editorExtensions.ts`: Pendaftaran ekstensi modular Table, TableRow, TableHeader, TableCell (resizable: true).
-   - Verifikasi build `npm run build` monorepo lulus 100% dengan 0 error (< 250 LOC per file).
+
+6. **Task 5.5: Symmetrical 4×2 Drag Context Menu & Smart Block Transformer**:
+   - `frontend/src/features/editor/components/NodeActionMenu.tsx`: Menu konteks drag handle 2-kolom simetris (4 item Kiri: H1, H2, H3, Code Block vs 4 item Kanan: Bullet List, Numbered List, Task List, Blockquote) dengan smart toggle otomatis kembali ke default Paragraph bila item aktif diklik ulang.
+   - `frontend/src/features/editor/components/DragContextMenu.tsx`: Pemisahan hover tracking dengan locked active menu state, penonaktifan overlay untuk node tabel (drag-only), perbaikan transform multi-arah via `.clearNodes()`, dan absolute document scroll anchoring.
+   - Audit LOC: Seluruh berkas berukuran `< 280 LOC` (mematuhi batas ketat `< 300 LOC`).
+   - Verifikasi build `npm run build` monorepo lulus 100% dengan 0 error.
 
 ---
 
 ### 🎯 Next Steps:
 - [ ] **Phase 6: Frontend Analytics Dashboard (Ghost Style)**:
-  - [ ] **Task 6.1**: Analytics Overview Page (`/dashboard/analytics`) dengan metric cards grid (Total Views, Published Posts, Drafts, Avg Read Time), interactive chart Recharts (7d/30d series), dan daftar Top 5 artikel paling populer.
+   - [ ] **Task 6.1**: Analytics Overview Page (`/dashboard/analytics`) dengan metric cards grid (Total Views, Published Posts, Drafts, Avg Read Time), interactive chart Recharts (7d/30d series), dan daftar Top 5 artikel paling populer.

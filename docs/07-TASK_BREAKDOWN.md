@@ -177,6 +177,17 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
     - `PublishSettingsForm.tsx`: Kontrol formulir metadata (Editable title dengan two-way sync, SlugEditor, TagInput, Excerpt SEO, dan CoverImageUploader).
     - `CustomImage.ts`: Modul ekstensi Tiptap terisolasi untuk alignment & image resizing (< 40 LOC).
     - `PostSettingsDrawer.tsx`: Sliding drawer alternatif untuk pengaturan metadata artikel.
+- [x] **Task 5.4: Tiptap Official Table Node UI Controller**
+  - Controllers & Overlays (< 250 LOC each):
+    - `TableContextMenu.tsx`: Right-click context menu (Alignment, Insert, Delete, Merge/Split, Toggle Header, Delete Table).
+    - `TableExtendButtons.tsx`: Horizontal & vertical `+` extend button bars.
+    - `TableSelectionOverlay.tsx`: Border highlight ungu dengan corner dot pada cell aktif.
+    - `TableDropdown.tsx`: Toolbar matrix selector 8×8 visual grid.
+    - `useTableController.ts`: Hook pelacak koordinat getBoundingClientRect().
+- [x] **Task 5.5: Symmetrical 4×2 Drag Context Menu & Smart Block Transformer**
+  - Controllers & Menus (< 280 LOC each):
+    - `NodeActionMenu.tsx`: Menu konteks drag handle 2-kolom simetris (4 item Kiri: H1, H2, H3, Code Block vs 4 item Kanan: Bullet List, Numbered List, Task List, Blockquote) dengan smart toggle otomatis kembali ke default Paragraph bila item aktif diklik ulang.
+    - `DragContextMenu.tsx`: Pemisahan hover tracking dengan locked active menu state, penonaktifan overlay untuk node tabel (drag-only), perbaikan transform multi-arah via `.clearNodes()`, dan absolute document scroll anchoring.
 
 ---
 

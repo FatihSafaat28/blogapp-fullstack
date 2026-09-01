@@ -1,10 +1,10 @@
-import React, { useRef, useEffect } from 'react';
-import { Editor, EditorContent } from '@tiptap/react';
-import { TiptapToolbar } from './TiptapToolbar';
-import { DragContextMenu } from './DragContextMenu';
-import { SlashDropdownMenu } from './SlashDropdownMenu';
-import { ImageBubbleToolbar } from './ImageBubbleToolbar';
-import { TableNodeController } from './table/TableNodeController';
+import React, { useRef, useEffect } from "react";
+import { Editor, EditorContent } from "@tiptap/react";
+import { TiptapToolbar } from "./TiptapToolbar";
+import { DragContextMenu } from "./DragContextMenu";
+import { SlashDropdownMenu } from "./SlashDropdownMenu";
+import { ImageBubbleToolbar } from "./ImageBubbleToolbar";
+import { TableNodeController } from "./table/TableNodeController";
 
 interface TiptapEditorCoreProps {
   editor: Editor | null;
@@ -24,7 +24,7 @@ export const TiptapEditorCore: React.FC<TiptapEditorCoreProps> = ({
   // Auto resize textarea height based on title length
   useEffect(() => {
     if (titleTextareaRef.current) {
-      titleTextareaRef.current.style.height = 'auto';
+      titleTextareaRef.current.style.height = "auto";
       titleTextareaRef.current.style.height = `${titleTextareaRef.current.scrollHeight}px`;
     }
   }, [title]);
