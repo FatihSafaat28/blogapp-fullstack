@@ -87,9 +87,12 @@ export const SlashDropdownMenu: React.FC<SlashDropdownMenuProps> = ({ editor }) 
       const textBefore = editor.state.doc.textBetween(Math.max(0, from - 1), from);
       if (textBefore === '/') {
         const cursorCoords = editor.view.coordsAtPos(from);
+        const scrollY = window.scrollY || document.documentElement.scrollTop;
+        const scrollX = window.scrollX || document.documentElement.scrollLeft;
+
         setCoords({
-          top: cursorCoords.bottom + 8,
-          left: Math.min(cursorCoords.left, window.innerWidth - 280),
+          top: cursorCoords.bottom + scrollY + 8,
+          left: Math.min(cursorCoords.left + scrollX, Math.max(16, document.documentElement.clientWidth - 280)),
         });
         setIsOpen(true);
         setFilterQuery('');
@@ -119,9 +122,12 @@ export const SlashDropdownMenu: React.FC<SlashDropdownMenuProps> = ({ editor }) 
       if (!editor) return;
       const { pos } = e.detail;
       const cursorCoords = editor.view.coordsAtPos(pos);
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      const scrollX = window.scrollX || document.documentElement.scrollLeft;
+
       setCoords({
-        top: cursorCoords.bottom + 8,
-        left: Math.min(cursorCoords.left, window.innerWidth - 280),
+        top: cursorCoords.bottom + scrollY + 8,
+        left: Math.min(cursorCoords.left + scrollX, Math.max(16, document.documentElement.clientWidth - 280)),
       });
       setIsOpen(true);
       setFilterQuery('');
@@ -157,7 +163,7 @@ export const SlashDropdownMenu: React.FC<SlashDropdownMenuProps> = ({ editor }) 
     <div
       ref={menuRef}
       style={{ top: `${coords.top}px`, left: `${coords.left}px` }}
-      className="fixed w-64 max-h-80 bg-card border border-line shadow-2xl rounded-2xl p-1.5 z-50 flex flex-col gap-1 text-xs text-ink animate-scaleIn select-none"
+      className="absolute w-64 max-h-80 bg-card border border-line shadow-2xl rounded-2xl p-1.5 z-50 flex flex-col gap-1 text-xs text-ink animate-scaleIn select-none"
     >
       {/* Scrollable Items List */}
       <div className="flex-1 overflow-y-auto pr-0.5 max-h-64 flex flex-col gap-1.5">

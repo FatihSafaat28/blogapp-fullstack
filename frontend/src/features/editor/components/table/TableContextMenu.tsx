@@ -55,7 +55,7 @@ export const TableContextMenu: React.FC<TableContextMenuProps> = ({
   };
 
   // Check if flyout should open to the left if near screen right boundary
-  const openLeft = position.left > window.innerWidth - 380;
+  const openLeft = position.left > (typeof window !== 'undefined' ? window.innerWidth - 380 : 600);
   const submenuClass = `absolute top-0 ${
     openLeft ? 'right-full mr-1.5' : 'left-full ml-1.5'
   } rounded-2xl bg-card border border-line shadow-2xl p-1.5 min-w-[190px] flex flex-col gap-0.5 text-xs animate-fadeIn`;
@@ -64,10 +64,10 @@ export const TableContextMenu: React.FC<TableContextMenuProps> = ({
     <div
       ref={menuRef}
       style={{
-        top: `${Math.min(position.top, window.innerHeight - 240)}px`,
-        left: `${Math.min(position.left, window.innerWidth - 220)}px`,
+        top: `${position.top}px`,
+        left: `${Math.min(position.left, Math.max(16, document.documentElement.clientWidth - 220))}px`,
       }}
-      className="fixed z-50 rounded-2xl bg-card border border-line shadow-2xl p-1.5 min-w-[200px] text-xs text-ink animate-scaleIn select-none"
+      className="absolute z-50 rounded-2xl bg-card border border-line shadow-2xl p-1.5 min-w-[200px] text-xs text-ink animate-scaleIn select-none"
     >
       {/* 1. Insert Submenu */}
       <div

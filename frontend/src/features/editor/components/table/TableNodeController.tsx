@@ -23,7 +23,9 @@ export const TableNodeController: React.FC<TableNodeControllerProps> = ({ editor
       const cell = target.closest('td, th');
       if (cell) {
         e.preventDefault();
-        setContextMenuPos({ top: e.clientY, left: e.clientX });
+        const scrollY = window.scrollY || document.documentElement.scrollTop;
+        const scrollX = window.scrollX || document.documentElement.scrollLeft;
+        setContextMenuPos({ top: e.clientY + scrollY, left: e.clientX + scrollX });
       }
     };
 
@@ -52,7 +54,7 @@ export const TableNodeController: React.FC<TableNodeControllerProps> = ({ editor
         isTableActive={isTableActive}
       />
 
-      {/* 3. Right-Click Context Menu with Flyout Submenus */}
+      {/* 3. Right-Click Context Menu with Flyout Submenus (Absolute Document Anchored) */}
       {contextMenuPos &&
         createPortal(
           <TableContextMenu
