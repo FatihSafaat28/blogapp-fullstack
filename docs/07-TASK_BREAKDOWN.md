@@ -141,28 +141,39 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
 
 ### ✍️ Phase 5: Frontend Dashboard & Editor Studio (Ghost Style)
 
-- [ ] **Task 5.1: Dashboard Posts Management Page (`/dashboard/posts`)**
-  - Model: `posts.queries.ts` (TanStack Query hooks).
-  - Presenter: `usePostListPresenter.ts` (Filter status, search, delete handler).
+- [x] **Task 5.1: Dashboard Posts Management Page (`/dashboard/posts`)**
+  - Model: `types/post.types.ts`, `api/postsApi.ts`, `api/postsQueries.ts` (TanStack Query hooks).
+  - Presenter: `usePostListPresenter.ts` (Filter status All/Published/Draft, search debounced, delete handler, copy link).
   - Views (< 200 LOC each):
     - `PostListPage.tsx`: Container halaman.
-    - `PostFilterTabs.tsx`: Tab `All`, `Published`, `Drafts`.
-    - `PostListTable.tsx` / `PostCard.tsx`: Tampilan daftar artikel dengan status badge & dropdown aksi.
-    - `DeletePostModal.tsx`: Konfirmasi dialog hapus.
-- [ ] **Task 5.2: Tiptap Rich Text Editor Engine (`/dashboard/posts/:id/edit`)**
-  - Presenter: `usePostEditorPresenter.ts` & `useAutoSave.ts` (Debounced 1.5s auto-save dengan status "Saving..." &rarr; "All changes saved").
-  - Views (< 200 LOC each):
-    - `PostEditorPage.tsx`: Main editor orchestrator.
-    - `EditorHeader.tsx`: Back button, auto-save status indicator, preview toggle, settings toggle, publish button.
-    - `TiptapToolbar.tsx`: Word-like formatting toolbar (H1-H3, Bold, Italic, Bullet/Number list, Quote, Image).
-    - `TiptapEditorCore.tsx`: Core editor body render.
-- [ ] **Task 5.3: Ghost-style Sliding Settings Drawer**
-  - Views (< 200 LOC each):
-    - `PostSettingsDrawer.tsx`: Slide-in drawer dari sisi kanan.
-    - `CoverImageUploader.tsx`: Upload & preview thumbnail post.
-    - `SlugEditor.tsx`: Input custom URL slug.
-    - `TagSelector.tsx`: Multi-select tag input.
-    - `ExcerptInput.tsx`: Input manual ringkasan artikel.
+    - `PostListHeader.tsx`: Header dan tombol buat tulisan baru.
+    - `PostFilterBar.tsx`: Tab segmented pill `All`, `Published`, `Draft` dan search input.
+    - `PostItemCard.tsx`: Tampilan kartu artikel dengan cover thumbnail, status badge, reading time, view count, dan dropdown menu aksi `[ ••• ]`.
+    - `DeletePostModal.tsx`: Konfirmasi dialog hapus permanen.
+- [x] **Task 5.2: Ghost-Style Fullscreen Editor Studio & Advanced Tiptap Engine (`/editor/new` & `/editor/:id`)**
+  - Model: `types/editor.types.ts`, `api/editorApi.ts`, `api/editorQueries.ts`.
+  - Presenter: `useEditorPresenter.ts` & `useAutoSave.ts` (Debounced 2s auto-save, status pill, dirty tracking, `Ctrl+S` instant save, emergency localStorage snapshot, headline auto-resize).
+  - Ekstensi Tiptap Suite (12 Packages): `@tiptap/react`, `@tiptap/pm`, `@tiptap/starter-kit`, `@tiptap/extension-underline`, `@tiptap/extension-highlight`, `@tiptap/extension-text-align`, `@tiptap/extension-link`, `@tiptap/extension-image`, `@tiptap/extension-task-list`, `@tiptap/extension-task-item`, `@tiptap/extension-drag-handle-react`, `@tiptap/extension-placeholder`.
+  - Arsitektur Tipografi & Vertical Rhythm:
+    - Zero Layout Shift Padding Transfer: Buffer hit-area 64px (`px-4 sm:px-16 py-4`) pada `.tiptap.ProseMirror` agar handle stabil tanpa memicu `mouseleave`.
+    - Aturan `:first-child` zero margin top pada editor.
+    - Margin atas standar paragraf `margin-top: 0.75rem`, `margin-bottom: 0`.
+    - Skala margin heading H1 (`2rem`), H2 (`1.5rem`), H3 (`1.15rem`), `margin-bottom: 0`.
+    - Zero margin untuk list items `li` dan paragraf di dalam list (`margin: 0 !important`).
+  - Views (< 250 LOC each):
+    - `EditorPage.tsx`: Fullscreen layout orchestrator (distraction-free, zero sidebar).
+    - `EditorHeader.tsx`: Back button, auto-save status pill, word & reading time counter, dan Single Primary Action Button ("Terbitkan Tulisan" / "Perbarui Tulisan").
+    - `TiptapToolbar.tsx`: Centered top formatting bar (History, H1-H3 portal dropdown, B/I/S/Code/Underline/Highlight, Align, Image, Link popover, ThemeToggle).
+    - `TiptapEditorCore.tsx`: Core editor body render dengan clipboard image paste handling dan auto-resizing headline textarea.
+    - `DragContextMenu.tsx`: Floating drag-and-drop handle dengan alignment presisi `[3, 16]`, animasi `moveTransition`, dan dimensi fisik stabil (`opacity-0 pointer-events-none`).
+    - `NodeActionMenu.tsx`: Menu aksi utama blok (Turn Into, Duplicate, Copy, Delete) dengan persistent scroll handling.
+    - `TurnIntoSubmenu.tsx`: Submenu melayang cascading di samping kanan untuk migrasi tipe blok.
+    - `SlashDropdownMenu.tsx` & `slashMenuItems.tsx`: Slash command palette `/` dengan filter pencarian dan navigasi keyboard penuh.
+- [x] **Task 5.3: Pre-Publish Review Modal & Single Action Workflow**
+  - Views & Primitives:
+    - `Modal.tsx`: Arsitektur dialog scrollable terstandar (`max-h-[88vh]`, `flex flex-col`, sticky header, sticky footer, body `flex-1 overflow-y-auto overscroll-contain`).
+    - `PublishReviewModal.tsx`: Modal pratinjau publikasi terpusat (Judul, CoverImage, SlugEditor, TagInput, Excerpt, dan Revert to Draft) dengan sticky action footer.
+    - `PostSettingsDrawer.tsx`: Sliding drawer alternatif untuk pengaturan metadata artikel.
 
 ---
 

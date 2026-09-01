@@ -5,7 +5,6 @@ import {
   Route,
   Navigate,
   Link,
-  useParams,
 } from 'react-router-dom';
 import { PublicLayout } from '../shared/components/layout/PublicLayout';
 import { DashboardLayout } from '../shared/components/layout/DashboardLayout';
@@ -19,13 +18,14 @@ import { Badge } from '../shared/components/ui/Display/Badge';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { RegisterPage } from '../features/auth/pages/RegisterPage';
 import { SettingsPage } from '../features/settings/pages/SettingsPage';
+import { PostListPage } from '../features/dashboard/posts/pages/PostListPage';
+import { EditorPage } from '../features/editor/pages/EditorPage';
 import {
   Sparkle,
   ArrowRight,
   NotePencil,
   Article,
   ChartLineUp,
-  FileText,
   ChartBar,
   Eye,
   Clock,
@@ -200,33 +200,6 @@ const HomePage: React.FC = () => {
    DASHBOARD PLACEHOLDERS
    -------------------------------------------------------------------------- */
 
-const DashboardPostsPlaceholder: React.FC = () => (
-  <div>
-    <div className="flex items-center justify-between mb-6">
-      <div>
-        <h2 className="text-2xl font-bold font-heading text-ink">
-          Semua Artikel
-        </h2>
-        <p className="text-sm text-ink-muted">Kelola dan publikasikan karya tulismu.</p>
-      </div>
-      <Link to="/editor/new">
-        <Button variant="primary" size="sm" iconPrefix={<NotePencil size={14} weight="bold" />} >
-          Tulis Artikel
-        </Button>
-      </Link>
-    </div>
-    <Card hoverLift>
-      <EmptyState
-        icon={<FileText size={32} />}
-        title="Belum ada draf atau artikel"
-        description="Mulai menulis artikel pertamamu di editor cerdas Ghost-style."
-        actionLabel="Mulai Menulis"
-        onAction={() => window.location.assign('/editor/new')}
-      />
-    </Card>
-  </div>
-);
-
 const DashboardAnalyticsPlaceholder: React.FC = () => (
   <div>
     <h2 className="text-2xl font-bold font-heading text-ink mb-2">
@@ -242,23 +215,6 @@ const DashboardAnalyticsPlaceholder: React.FC = () => (
     </Card>
   </div>
 );
-
-const EditorPlaceholder: React.FC = () => {
-  const { id } = useParams<{ id?: string }>();
-  return (
-    <div className="min-h-screen bg-canvas p-6 flex flex-col items-center justify-center">
-      <h2 className="text-2xl font-bold font-heading text-ink mb-2">
-        {id ? `Ghost Editor - Post #${id}` : 'Ghost Editor - Draf Baru'}
-      </h2>
-      <p className="text-sm text-ink-muted mb-6">Tiptap rich text editor (Phase 5)</p>
-      <Link to="/dashboard/posts">
-        <Button variant="secondary" size="md">
-          ← Kembali ke Dashboard
-        </Button>
-      </Link>
-    </div>
-  );
-};
 
 const NotFoundPage: React.FC = () => (
   <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-6">
@@ -303,14 +259,14 @@ export const AppRouter: React.FC = () => {
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Navigate to="/dashboard/posts" replace />} />
-            <Route path="posts" element={<DashboardPostsPlaceholder />} />
+            <Route path="posts" element={<PostListPage />} />
             <Route path="analytics" element={<DashboardAnalyticsPlaceholder />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>
 
           {/* Fullscreen Ghost Editor */}
-          <Route path="/editor/new" element={<EditorPlaceholder />} />
-          <Route path="/editor/:id" element={<EditorPlaceholder />} />
+          <Route path="/editor/new" element={<EditorPage />} />
+          <Route path="/editor/:id" element={<EditorPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

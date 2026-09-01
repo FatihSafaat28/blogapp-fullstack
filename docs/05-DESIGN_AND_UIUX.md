@@ -245,3 +245,68 @@ Untuk memastikan platform dapat diakses oleh semua kalangan (termasuk pengguna s
    - Tab filter wajib menggunakan `role="tablist"` pada kontainer, serta `role="tab"` dan `aria-selected={isActive}` pada tombol tab.
    - Loading Spinner wajib menggunakan `role="status"` dan `aria-label="Memuat data..."`.
    - Dropdown menu wajib menggunakan `role="menu"` pada popover dan `role="menuitem"` pada opsi-opsinya.
+
+---
+
+## 8. ✍️ Studio Editor & Tipografi Tiptap (Phase 5 Deep-Dive)
+
+Dokumentasi teknis untuk arsitektur WYSIWYG editor berbasis **Tiptap (ProseMirror)** pada fitur studio kepenulisan (`/editor/new` & `/editor/:id`).
+
+### A. Katalog Ekstensi Tiptap Resmi yang Digunakan
+
+| Kategori | Ekstensi | Versi | Peran & Fungsionalitas Utama |
+|---|---|---|---|
+| **Core** | `@tiptap/react` | `^2.11.5` | React wrapper dan lifecycle hooks (`useEditor`, `EditorContent`). |
+| **Core** | `@tiptap/pm` | `^2.11.5` | ProseMirror core engine (`state`, `view`, `model`, `transform`, `dropcursor`). |
+| **Core** | `@tiptap/starter-kit` | `^2.11.5` | Bundle dasar: Paragraph, Heading (H1-H3), Bold, Italic, Strike, CodeBlock, Blockquote, BulletList, OrderedList, ListItem, HorizontalRule, History undo/redo. |
+| **Format** | `@tiptap/extension-underline` | `^2.27.2` | Format garis bawah teks. |
+| **Format** | `@tiptap/extension-highlight` | `^2.27.2` | Stabilo sorotan teks dengan opsi multi-warna (`multicolor: true`). |
+| **Format** | `@tiptap/extension-text-align` | `^2.27.2` | Perataan teks (kiri, tengah, kanan, rata kiri-kanan) pada paragraph dan heading. |
+| **Media** | `@tiptap/extension-link` | `^2.11.5` | Hyperlink inline dengan custom popover edit/buka/lepas link. |
+| **Media** | `@tiptap/extension-image` | `^2.11.5` | Gambar inline & block dengan preset ukuran (Small, Medium, Full Width) serta alignment. |
+| **List** | `@tiptap/extension-task-list` | `^2.27.2` | Container daftar tugas interaktif (`taskList`). |
+| **List** | `@tiptap/extension-task-item` | `^2.27.2` | Butir to-do list dengan checkbox fungsional (`nested: true`). |
+| **UX & Drag** | `@tiptap/extension-drag-handle-react` | `^2.27.2` | Floating handle drag-and-drop blok dan trigger menu konteks node. |
+| **UX & Assist** | `@tiptap/extension-placeholder` | `^2.27.2` | Placeholder dinamis ("Mulai tuangkan cerita, ide, atau gagasan...") saat baris kosong. |
+
+### B. Arsitektur *Zero Layout Shift Padding Transfer* (Hit-Area Buffer 64px)
+* **Masalah Awal**: Listener `mouseleave` pada `@tiptap/extension-drag-handle` langsung menutup popup handle jika kursor digerakkan ke kiri teks ketika `.ProseMirror` tidak memiliki padding samping (`padding: 0`).
+* **Solusi**:
+  - Menggeser jatah padding dari kontainer kertas dokumen luar ke dalam atribut kelas `.tiptap.ProseMirror`: `px-4 sm:px-16 py-4` (64px di desktop).
+  - Menyelaraskan kontainer judul artikel dengan padding yang sama (`px-4 sm:px-16`) agar judul dan isi artikel sejajar lurus vertikal 100%.
+  - Menghadirkan zona bantalan aman (*hit-area buffer*) selebar 64px di sebelah kiri teks. Kursor mouse tetap berada 100% di dalam batas DOM editor saat mengarahkan ke tombol drag handle tanpa memicu `mouseleave`.
+
+### C. Drag Context Menu & Cascading Submenu
+* **Alignment Presisi**: Posisi tombol drag handle diatur `offset: [3, 16]` dengan Tippy options sehingga tepat berada di tengah tinggi baris teks.
+* **Kestabilan Dimensi DOM**: Baris kosong disembunyikan menggunakan `opacity-0 pointer-events-none` (bukan unmount React) agar pengukuran bounding box awal oleh Tippy selalu akurat sejak frame pertama (`placement: 'left-start'`).
+* **Animasi Luncur Halus**: Menggunakan opsi bawaan `moveTransition: 'transform 0.15s cubic-bezier(0, 0, 0.2, 1)'`.
+* **Arsitektur Modular Submenu**:
+  - `NodeActionMenu.tsx`: Menu aksi utama yang ringkas (Turn Into, Duplicate, Copy to Clipboard, Delete). Menu tidak tertutup saat scrolling, melainkan hanya saat *outside click* atau tombol `Escape`.
+  - `TurnIntoSubmenu.tsx`: Submenu melayang cascading di samping kanan untuk mengubah jenis blok (Text, Heading 1-3, Bullet List, Numbered List, Task List, Blockquote, Code Block).
+* **Reset Seleksi Pasca Drop**: Listener drop mereset node selection kembali ke kursor teks normal setelah 50ms, dipadukan dengan aturan CSS `::selection { color: inherit !important }` untuk mencegah teks berubah menjadi hitam di dark mode.
+
+### D. Slash Command Palette (`/` Dropdown Menu)
+* **Trigger Otomatis**: Tombol `+` (*Insert block*) pada drag handle menyisipkan baris baru dan mengetikkan karakter `"/"` secara fisik di editor untuk memicu menu slash.
+* **Komponen & Navigasi**:
+  - `SlashDropdownMenu.tsx` (~228 LOC): Terbuka otomatis saat pengguna mengetik `/`, mendukung penyaringan pencarian instan, dan navigasi penuh keyboard (`ArrowUp`, `ArrowDown`, `Enter`, `Escape`).
+  - `slashMenuItems.tsx` (~80 LOC): Katalog item menu terisolasi (Heading 1-3, Lists, Task List, Quote, Code Block, Image Upload, Divider).
+
+### E. Ritme Vertikal Tipografi (*Vertical Rhythm*)
+Penerapan aturan tipografi editorial ketat pada `src/styles/index.css`:
+1. **Aturan Baris Pertama (`:first-child`)**: Elemen pertama di dalam editor selalu memiliki `margin-top: 0 !important` agar rapat tanpa celah kosong di bawah judul artikel.
+2. **Paragraf Standar**: Hanya memiliki margin atas senormalnya (`margin-top: 0.75rem`, `margin-bottom: 0`).
+3. **Skala Heading**:
+   - **H1**: `margin-top: 2rem`, `margin-bottom: 0`, `font-size: 2rem`.
+   - **H2**: `margin-top: 1.5rem`, `margin-bottom: 0`, `font-size: 1.5rem`.
+   - **H3**: `margin-top: 1.15rem`, `margin-bottom: 0`, `font-size: 1.25rem`.
+   *Catatan*: Margin bawah disetel `0` agar teks penjelas langsung terhubung dekat dengan judul topiknya (*proximity principle*).
+4. **List & To-Do List**: Semua elemen `li`, to-do item, dan paragraf di dalam list (`li p`) dipastikan `margin: 0 !important` sehingga antar butir rapat dan proporsional.
+
+### F. Modal Publikasi & Single Action Header
+* **Satu Tombol Aksi di Pojok Kanan Atas**: Menghilangkan tombol "Pengaturan" yang redundan. Header kini hanya memuat 1 tombol utama: **`Terbitkan Tulisan`** (saat draf) atau **`Perbarui Tulisan`** (saat sudah terbit).
+* **Arsitektur Modal Dialog Scrollable (`Modal.tsx`)**:
+  - Kartu dialog dibatasi `max-h-[88vh]` dengan layout `flex flex-col`.
+  - **Sticky Header**: Judul dialog dan tombol tutup `(X)` terkunci permanen di atas.
+  - **Scrollable Body**: Kontainer formulir memiliki `flex-1 overflow-y-auto overscroll-contain` sehingga formulir panjang dapat di-scroll lancar di semua resolusi layar tanpa terdorong keluar layar (*off-screen*).
+  - **Sticky Footer**: Di `PublishReviewModal.tsx`, tombol aksi (*"Kembali Mengedit"*, *"Kembalikan ke Draf"*, *"Konfirmasi & Terbitkan Sekarang"*) ditempatkan pada prop `footer` sehingga selalu tampak di bagian bawah modal.
+

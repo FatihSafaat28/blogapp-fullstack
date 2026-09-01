@@ -458,6 +458,74 @@ Dokumen ini melacak riwayat perubahan, fitur yang telah diselesaikan, dan rencan
 ---
 
 ### 🎯 Next Steps:
-- [ ] **Phase 5: Frontend Dashboard & Editor Studio (Ghost Style)**:
-  - [ ] **Task 5.1**: Dashboard Posts Management Page (`/dashboard/posts`) dengan tab All, Published, Drafts, search bar, dan modal konfirmasi hapus artikel.
-  - [ ] **Task 5.2**: Ghost-Style Fullscreen Editor Studio (`/editor/new` & `/editor/:id`) dengan auto-save debounce 2 detik, tag chip selector, dan settings drawer.
+- [x] **Phase 5: Frontend Dashboard & Editor Studio (Ghost Style)**:
+  - [x] **Task 5.1**: Dashboard Posts Management Page (`/dashboard/posts`) dengan tab All, Published, Drafts, search bar debounced, pagination, dan modal konfirmasi hapus artikel.
+  - [x] **Task 5.2**: Ghost-Style Fullscreen Editor Studio (`/editor/new` & `/editor/:id`) dengan Tiptap engine, auto-save debounce 2 detik, status pill, headline auto-resize, shortcut Ctrl+S, dan clipboard image paste.
+  - [x] **Task 5.3**: Ghost-Style Sliding Settings Drawer (`PostSettingsDrawer`) dengan thumbnail WebP upload, live custom slug preview, tag topic chip selector, dan manual excerpt description.
+
+---
+
+## 📌 [2026-09-01] - Phase 5: Frontend Dashboard & Ghost Editor Studio (100% Complete)
+
+### ✅ Completed:
+1. **Task 5.1: Dashboard Posts Management Page (`/dashboard/posts`)**:
+   - `frontend/src/features/dashboard/posts/types/post.types.ts`: Kontrak data TypeScript (`PostListItem`, `PostTagItem`, `DashboardPostsResponse`, `DashboardQueryParams`).
+   - `frontend/src/features/dashboard/posts/api/postsApi.ts`: Model API client Axios (`GET /api/posts/dashboard`, `PATCH /api/posts/:id/publish`, `DELETE /api/posts/:id`, `POST /api/posts/draft`).
+   - `frontend/src/features/dashboard/posts/api/postsQueries.ts`: TanStack Query hooks (`useDashboardPostsQuery`, `useTogglePublishMutation`, `useDeletePostMutation`, `useCreateDraftMutation`).
+   - `frontend/src/features/dashboard/posts/hooks/usePostListPresenter.ts`: Presenter hook yang mengelola state filter tab (`all`, `published`, `draft`), search bar debounced 300ms, pagination, modal hapus, dan copy link publik.
+   - `frontend/src/features/dashboard/posts/components/PostListHeader.tsx`: Header visual dengan counter jumlah artikel dan tombol CTA `+ Tulis Cerita Baru`.
+   - `frontend/src/features/dashboard/posts/components/PostFilterBar.tsx`: Navigasi tab segmented pill (`<Tabs>`) dan search bar (`<Input>`) dengan clear button.
+   - `frontend/src/features/dashboard/posts/components/PostItemCard.tsx`: Kartu artikel dengan preview cover thumbnail, status badge (`<Badge>`), excerpt ringkas, metrik baca (`<Clock />`, `<Eye />`), dan popover quick action `<Dropdown>` (*Edit*, *Lihat Publik*, *Ubah Status*, *Salin Tautan*, *Hapus*).
+   - `frontend/src/features/dashboard/posts/components/DeletePostModal.tsx`: Dialog konfirmasi hapus permanen menggunakan atom `<Modal>`.
+   - `frontend/src/features/dashboard/posts/pages/PostListPage.tsx`: Master coordinator view berbalut skeleton loading shimmer dan empty state ramah pengguna.
+   - Seluruh berkas berukuran `< 130 LOC` (mematuhi batas `< 300 LOC`).
+
+2. **Task 5.2: Ghost-Style Fullscreen Editor Studio & Advanced Tiptap Engine (`/editor/new` & `/editor/:id`)**:
+   - `frontend/package.json`: Integrasi rangkaian pustaka resmi Tiptap (12 packages):
+     - Core: `@tiptap/react` (^2.11.5), `@tiptap/pm` (^2.11.5), `@tiptap/starter-kit` (^2.11.5).
+     - Formatting & Marks: `@tiptap/extension-underline`, `@tiptap/extension-highlight`, `@tiptap/extension-text-align`.
+     - Lists: `@tiptap/extension-task-list`, `@tiptap/extension-task-item`.
+     - Media & Link: `@tiptap/extension-image`, `@tiptap/extension-link`.
+     - UX & Drag Utilities: `@tiptap/extension-drag-handle-react`, `@tiptap/extension-placeholder`.
+   - `frontend/src/features/editor/types/editor.types.ts`: Kontrak data DTO editor (`PostDetail`, `AutoSavePayload`, `AutoSaveStatus`).
+   - `frontend/src/features/editor/api/editorApi.ts` & `editorQueries.ts`: Integrasi TanStack Query & Axios endpoint editor (`GET /api/posts/dashboard/:id`, `PUT /api/posts/:id`, `PATCH /api/posts/:id/publish`, `POST /api/media/upload`).
+   - `frontend/src/features/editor/hooks/useAutoSave.ts`: Mesin auto-save debounced 2 detik dengan dirty checking, snapshot darurat ke `localStorage` (`avian_backup_${id}`), shortcut keyboard `Ctrl+S` / `Cmd+S` instant save, dan native `beforeunload` tab guard.
+   - `frontend/src/features/editor/hooks/useEditorPresenter.ts`: Presenter hook editor yang mengelola siklus hidup Tiptap ProseMirror, title auto-resize textarea, live word counter, estimasi waktu baca, upload inline image dari clipboard (`Ctrl+V`), dan atomic publish flush.
+   - `frontend/src/features/editor/hooks/useEditorPresenter.ts` & `TiptapEditorCore.tsx`: Menerapkan arsitektur *Zero Layout Shift Padding Transfer* ala Tiptap Demo. Memindahkan jatah padding kontainer kertas luar ke dalam `.tiptap.ProseMirror` (`px-4 sm:px-16 py-4`) dan Judul Artikel, serta memperlebar kanvas dokumen menjadi `max-w-5xl`. Hal ini menghadirkan zona bantalan (*hit-area buffer*) hijau selebar 64px di sebelah kiri teks sehingga kursor mouse berada 100% di dalam editor saat mendekati drag handle tanpa memicu `mouseleave`.
+   - `frontend/src/shared/components/ui/Overlay/Modal.tsx`: Memperbaiki arsitektur modal container dengan `max-h-[88vh]`, `flex flex-col`, sticky header & footer, serta body `flex-1 overflow-y-auto overscroll-contain`. Mencegah modal melebar keluar batas layar (*off-screen*) dan memastikan seluruh konten panjang dapat di-scroll dengan mulus di semua resolusi viewport.
+   - `frontend/src/features/editor/components/PublishReviewModal.tsx`: Menempatkan tombol aksi penerbitan ("Kembalikan ke Draf", "Kembali Mengedit", "Konfirmasi & Terbitkan Sekarang") pada prop `footer` Modal yang sticky di bagian bawah dialog sehingga selalu terlihat dan siap diklik tanpa terdorong keluar layar.
+   - `frontend/src/features/editor/components/EditorHeader.tsx`: Menyederhanakan tombol aksi di pojok kanan atas menjadi **hanya 1 button** ("Terbitkan Tulisan" / "Perbarui Tulisan"). Menghapus tombol "Pengaturan" yang redundan karena seluruh pengaturan publikasi (sampul, slug, tag, excerpt) sudah terintegrasi rapi di dalam modal pratinjau publikasi.
+   - `frontend/src/features/editor/components/DragContextMenu.tsx` & `NodeActionMenu.tsx`: Memperbaiki perataan vertikal tombol drag handle (`offset: [3, 16]`), animasi luncur halus `moveTransition`, memecah menu aksi ke subkomponen modular `< 100 LOC`, dan mempertahankan dimensi DOM fisik stabil (`opacity-0 pointer-events-none`) agar pengukuran awal Tippy selalu akurat 100%.
+   - `frontend/src/features/editor/components/TurnIntoSubmenu.tsx`: Submenu melayang cascading di sebelah kanan untuk mengubah format blok (Text, Heading 1-3, Bullet List, Numbered List, Task List, Quote, Code Block).
+   - `frontend/src/features/editor/components/SlashDropdownMenu.tsx` & `slashMenuItems.tsx`: Command palette menu slash (`/`) dengan live search filtering, navigasi keyboard penuh, dan integrasi tombol `+` (*Insert block*).
+   - `frontend/src/features/editor/components/TiptapToolbar.tsx`: Fixed Top Control Bar terpusat (*centered cluster*) sesuai standar Tiptap Simple Editor Template dengan pemisah vertikal rapi, kontrol History, Blockquote, Code Block, Formatting B/I/S/Code/Underline, Alignment, Image, Search & Replace Popover, dan ThemeToggle.
+   - `frontend/src/features/editor/components/HeadingDropdown.tsx`: Dropdown Portal Heading H1-H3 sesuai standar SEO/Web editorial dengan status transparan saat tidak aktif (*clean default state*).
+   - `frontend/src/features/editor/components/ListDropdown.tsx`: Dropdown Portal List dengan pergantian ikon dinamis (`Bullet`, `Numbered`, `Task List`) dan status transparan saat tidak aktif.
+   - `frontend/src/features/editor/components/LinkPopover.tsx`: Floating interactive Link Popover sesuai standar Tiptap UI dengan input URL, toggle tab baru, navigasi kunjungi tautan, dan unlink.
+   - `frontend/src/features/editor/components/HighlightPopover.tsx`: Floating color palette stabilo 5 warna lembut + tombol hapus stabilo.
+   - `frontend/src/features/editor/components/SearchReplacePopover.tsx`: Floating Find & Replace dengan pencocokan kata, case sensitive, navigasi match `x / y`, Replace, dan Replace All.
+   - `frontend/src/features/editor/components/TextBubbleMenu.tsx`: Floating selection menu yang muncul saat teks diblok (*Bold, Italic, Underline, Strike, Highlight, Link, H2, H3, Quote*).
+   - `frontend/src/features/editor/components/ImageBubbleToolbar.tsx`: Controller melayang interaktif khusus gambar ala MS Word/Ghost (Preset ukuran: S/M/Full, perataan: Kiri/Tengah/Kanan, toggle outline garis tepi, toggle bayangan, dan hapus gambar 1-klik).
+   - `frontend/src/styles/index.css`: Standar ritme vertikal tipografi editorial:
+     - Aturan `:first-child` zero margin top pada editor.
+     - Paragraf standar memiliki margin atas saja (`margin-top: 0.75rem`, `margin-bottom: 0`).
+     - Skala margin heading H1 (`2rem`), H2 (`1.5rem`), H3 (`1.15rem`), `margin-bottom: 0`.
+     - Zero margin untuk seluruh elemen list item `li` dan paragraf list `li p` (`margin: 0 !important`).
+     - Penanganan warna seleksi `color: inherit !important` anti-teks gelap pasca drag-and-drop di dark mode.
+   - Seluruh berkas berukuran `< 280 LOC` (mematuhi batas `< 300 LOC`).
+
+3. **Task 5.3: Ghost-Style Sliding Settings Drawer**:
+   - `frontend/src/features/editor/components/CoverImageUploader.tsx`: Upload & instant preview cover thumbnail terintegrasi backend Sharp WebP.
+   - `frontend/src/features/editor/components/SlugEditor.tsx`: Input custom URL slug dengan live preview tautan publik `avianblog.com/@username/slug`.
+   - `frontend/src/features/editor/components/PostSettingsDrawer.tsx`: Laci geser samping kanan menggunakan atom `<Drawer>` yang memadukan cover uploader, slug editor, `<TagInput>` topik multi-chip (maks 5 tag), dan `<Textarea>` excerpt ringkasan SEO (0/160 karakter).
+   - Seluruh berkas berukuran `< 100 LOC`.
+
+4. **Verifikasi Build & Arsitektur Monorepo**:
+   - `npm run build` monorepo (backend `tsc` + frontend `vite build`) lulus 100% dengan 0 error kompilasi.
+   - 100% Token CSS Semantik (`var(--color-canvas)`, `var(--color-card)`, dll) dan 100% `@phosphor-icons/react`.
+
+---
+
+### 🎯 Next Steps:
+- [ ] **Phase 6: Frontend Analytics Dashboard (Ghost Style)**:
+  - [ ] **Task 6.1**: Analytics Overview Page (`/dashboard/analytics`) dengan metric cards grid (Total Views, Published Posts, Drafts, Avg Read Time), interactive chart Recharts (7d/30d series), dan daftar Top 5 artikel paling populer.
