@@ -26,7 +26,7 @@ export const updatePostSchema = z.object({
     .trim()
     .optional(),
   coverImage: z.string().max(500).trim().nullable().optional(),
-  contentHtml: z.string().default(''),
+  contentHtml: z.string().optional(),
   contentJson: z.unknown().optional(),
   excerpt: z
     .string()

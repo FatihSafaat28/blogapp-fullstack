@@ -60,9 +60,15 @@ export class PostsService {
       );
     }
 
-    const cleanHtml = sanitizeHtmlContent(input.contentHtml || '');
+    const cleanHtml =
+      input.contentHtml !== undefined
+        ? sanitizeHtmlContent(input.contentHtml)
+        : existingPost.contentHtml;
     const readingTimeMinutes = calculateReadingTime(cleanHtml);
-    const excerpt = input.excerpt || extractExcerpt(cleanHtml);
+    const excerpt =
+      input.excerpt !== undefined
+        ? input.excerpt
+        : existingPost.excerpt || extractExcerpt(cleanHtml);
 
     let targetSlug = existingPost.slug;
     if (input.slug && input.slug !== existingPost.slug) {
@@ -108,11 +114,17 @@ export class PostsService {
       return tx.post.update({
         where: { id: postId },
         data: {
-          title: input.title,
+          title: input.title !== undefined ? input.title : existingPost.title,
           slug: targetSlug,
-          coverImage: input.coverImage,
+          coverImage:
+            input.coverImage !== undefined
+              ? input.coverImage
+              : existingPost.coverImage,
           contentHtml: cleanHtml,
-          contentJson: input.contentJson ? (input.contentJson as object) : undefined,
+          contentJson:
+            input.contentJson !== undefined
+              ? (input.contentJson as object)
+              : (existingPost.contentJson as object),
           excerpt,
           readingTimeMinutes,
         },

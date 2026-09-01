@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -16,6 +16,7 @@ import { editorApi } from '../api/editorApi';
 import { useAutoSave } from './useAutoSave';
 import { useToast } from '../../../shared/components/ui/Toast/useToast';
 import { useAuthStore } from '../../auth/stores/authStore';
+import { AutoSavePayload } from '../types/editor.types';
 
 export const useEditorPresenter = () => {
   const { id } = useParams<{ id: string }>();
@@ -34,6 +35,8 @@ export const useEditorPresenter = () => {
 
   const isInitialHydratedRef = useRef(false);
   const isCreatingNewDraftRef = useRef(false);
+  const contentHtmlRef = useRef<string>('');
+  const contentJsonRef = useRef<unknown>(null);
 
   // If landing on /editor/new, automatically initialize draft and replace URL
   useEffect(() => {
@@ -56,24 +59,8 @@ export const useEditorPresenter = () => {
   const { data: postData, isLoading: isPostLoading } = usePostDetailQuery(id);
   const post = postData?.data?.post;
 
-  const { status: autoSaveStatus, lastSavedAt, triggerAutoSave, flushAutoSave, isSaving } =
-    useAutoSave({ postId: post?.id });
-
+  const autoSave = useAutoSave({ postId: post?.id });
   const publishMutation = useEditorPublishMutation();
-
-  // Helper to build payload
-  const buildCurrentPayload = useCallback(
-    (currentHtml?: string) => ({
-      title: title || 'Untitled Post',
-      slug: slug || undefined,
-      coverImage,
-      contentHtml: currentHtml ?? editor?.getHTML() ?? '',
-      contentJson: editor?.getJSON(),
-      excerpt,
-      tags,
-    }),
-    [title, slug, coverImage, excerpt, tags]
-  );
 
   // Tiptap Instance
   const editor = useEditor({
@@ -128,7 +115,7 @@ export const useEditorPresenter = () => {
                   .then((res) => {
                     if (res?.data?.url) {
                       editor?.chain().focus().setImage({ src: res.data.url }).run();
-                      showToast('Gambar berhasil diunggah dan disisipkan!', 'success');
+                      showToast('Gambar berhasil disisipkan!', 'success');
                     }
                   })
                   .catch(() => {
@@ -147,14 +134,46 @@ export const useEditorPresenter = () => {
       const text = ed.getText().trim();
       const words = text ? text.split(/\s+/).length : 0;
       setWordCount(words);
+      contentHtmlRef.current = html;
+      contentJsonRef.current = ed.getJSON();
 
       if (isInitialHydratedRef.current) {
-        triggerAutoSave(buildCurrentPayload(html));
+        autoSave.triggerAutoSave(
+          buildCurrentPayload({ contentHtml: html, contentJson: ed.getJSON() })
+        );
       }
     },
   });
 
-  // Initial Data Hydration (Run only once)
+  // Safe live payload builder
+  const buildCurrentPayload = (overrides?: Partial<AutoSavePayload>): AutoSavePayload => {
+    const liveHtml =
+      overrides?.contentHtml ??
+      (editor && !editor.isDestroyed ? editor.getHTML() : contentHtmlRef.current) ??
+      post?.contentHtml ??
+      '';
+    const liveJson =
+      overrides?.contentJson ??
+      (editor && !editor.isDestroyed ? editor.getJSON() : contentJsonRef.current) ??
+      post?.contentJson;
+
+    return {
+      title: overrides?.title !== undefined ? overrides.title : (title || 'Untitled Post'),
+      slug: overrides?.slug !== undefined ? overrides.slug : (slug || undefined),
+      coverImage: overrides?.coverImage !== undefined ? overrides.coverImage : coverImage,
+      contentHtml: liveHtml,
+      contentJson: liveJson,
+      excerpt: overrides?.excerpt !== undefined ? overrides.excerpt : excerpt,
+      tags: overrides?.tags !== undefined ? overrides.tags : tags,
+    };
+  };
+
+  const safeTriggerAutoSave = (payload: AutoSavePayload) => {
+    if (!isInitialHydratedRef.current) return;
+    autoSave.triggerAutoSave(payload);
+  };
+
+  // Initial Data Hydration (Run only once when post and editor ready)
   useEffect(() => {
     if (post && !isInitialHydratedRef.current && editor) {
       setTitle(post.title || '');
@@ -164,6 +183,8 @@ export const useEditorPresenter = () => {
       setTags(post.postTags?.map((pt) => pt.tag.name) || []);
 
       if (post.contentHtml) {
+        contentHtmlRef.current = post.contentHtml;
+        contentJsonRef.current = post.contentJson;
         editor.commands.setContent(post.contentHtml);
         const text = editor.getText().trim();
         setWordCount(text ? text.split(/\s+/).length : 0);
@@ -183,62 +204,57 @@ export const useEditorPresenter = () => {
   // Handlers
   const handleTitleChange = (newTitle: string) => {
     setTitle(newTitle);
-    triggerAutoSave({ ...buildCurrentPayload(), title: newTitle });
+    safeTriggerAutoSave(buildCurrentPayload({ title: newTitle }));
   };
 
   const handleSlugChange = (newSlug: string) => {
     const sanitized = newSlug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
     setSlug(sanitized);
-    triggerAutoSave({ ...buildCurrentPayload(), slug: sanitized });
+    safeTriggerAutoSave(buildCurrentPayload({ slug: sanitized }));
   };
 
   const handleCoverChange = (url: string | null) => {
     setCoverImage(url);
-    triggerAutoSave({ ...buildCurrentPayload(), coverImage: url });
+    safeTriggerAutoSave(buildCurrentPayload({ coverImage: url }));
   };
 
   const handleTagsChange = (newTags: string[]) => {
     setTags(newTags);
-    triggerAutoSave({ ...buildCurrentPayload(), tags: newTags });
+    safeTriggerAutoSave(buildCurrentPayload({ tags: newTags }));
   };
 
   const handleExcerptChange = (newExcerpt: string) => {
     setExcerpt(newExcerpt);
-    triggerAutoSave({ ...buildCurrentPayload(), excerpt: newExcerpt });
+    safeTriggerAutoSave(buildCurrentPayload({ excerpt: newExcerpt }));
   };
 
-  const handleOpenPublishModal = () => {
-    setIsPublishModalOpen(true);
-  };
-
-  const handleClosePublishModal = () => {
-    setIsPublishModalOpen(false);
-  };
+  const handleOpenPublishModal = () => setIsPublishModalOpen(true);
+  const handleClosePublishModal = () => setIsPublishModalOpen(false);
 
   const handleConfirmPublish = async () => {
     if (!post?.id) return;
-    await flushAutoSave(buildCurrentPayload());
+    await autoSave.flushAutoSave(buildCurrentPayload());
     try {
       await publishMutation.mutateAsync({ id: post.id, published: true });
       setIsPublishModalOpen(false);
     } catch {
-      // Handled by toast
+      // Handled by query toast
     }
   };
 
   const handleUnpublish = async () => {
     if (!post?.id) return;
-    await flushAutoSave(buildCurrentPayload());
+    await autoSave.flushAutoSave(buildCurrentPayload());
     try {
       await publishMutation.mutateAsync({ id: post.id, published: false });
       setIsPublishModalOpen(false);
     } catch {
-      // Handled by toast
+      // Handled by query toast
     }
   };
 
   const handleExitEditor = async () => {
-    await flushAutoSave(buildCurrentPayload());
+    await autoSave.flushAutoSave(buildCurrentPayload());
     navigate('/dashboard/posts');
   };
 
@@ -272,9 +288,9 @@ export const useEditorPresenter = () => {
     setIsSettingsOpen,
     isPublishModalOpen,
     isLoading: isPostLoading || !isInitialHydratedRef.current,
-    autoSaveStatus,
-    lastSavedAt,
-    isSaving,
+    autoSaveStatus: autoSave.status,
+    lastSavedAt: autoSave.lastSavedAt,
+    isSaving: autoSave.isSaving,
     isPublishing: publishMutation.isPending,
     handleTitleChange,
     handleSlugChange,
