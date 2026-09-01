@@ -76,6 +76,7 @@ export const EditorPage: React.FC = () => {
         onConfirmPublish={handleConfirmPublish}
         isPublishing={isPublishing}
         title={title}
+        onTitleChange={handleTitleChange}
         coverImage={coverImage}
         onCoverChange={handleCoverChange}
         slug={slug}
@@ -87,6 +88,9 @@ export const EditorPage: React.FC = () => {
         onExcerptChange={handleExcerptChange}
         isAlreadyPublished={post?.published || false}
         onUnpublish={handleUnpublish}
+        authorName={user?.fullName || user?.username || 'Penulis'}
+        authorAvatar={user?.avatar || null}
+        readingTime={readingTime}
       />
 
       {/* 4. Sliding Publication Settings Drawer */}

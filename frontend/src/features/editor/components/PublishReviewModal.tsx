@@ -1,11 +1,9 @@
 import React from 'react';
 import { Modal } from '../../../shared/components/ui/Overlay/Modal';
 import { Button } from '../../../shared/components/ui/Form/Button';
-import { TagInput } from '../../../shared/components/ui/Form/TagInput';
-import { Textarea } from '../../../shared/components/ui/Form/Textarea';
-import { CoverImageUploader } from './CoverImageUploader';
-import { SlugEditor } from './SlugEditor';
-import { PaperPlaneTilt, Sparkle, ArrowCounterClockwise } from '@phosphor-icons/react';
+import { PublishCardPreview } from './PublishCardPreview';
+import { PublishSettingsForm } from './PublishSettingsForm';
+import { PaperPlaneTilt, ArrowCounterClockwise } from '@phosphor-icons/react';
 
 interface PublishReviewModalProps {
   isOpen: boolean;
@@ -13,6 +11,7 @@ interface PublishReviewModalProps {
   onConfirmPublish: () => void;
   isPublishing: boolean;
   title: string;
+  onTitleChange: (val: string) => void;
   coverImage: string | null;
   onCoverChange: (url: string | null) => void;
   slug: string;
@@ -24,6 +23,9 @@ interface PublishReviewModalProps {
   onExcerptChange: (excerpt: string) => void;
   isAlreadyPublished: boolean;
   onUnpublish: () => void;
+  authorName?: string;
+  authorAvatar?: string | null;
+  readingTime?: number;
 }
 
 export const PublishReviewModal: React.FC<PublishReviewModalProps> = ({
@@ -32,6 +34,7 @@ export const PublishReviewModal: React.FC<PublishReviewModalProps> = ({
   onConfirmPublish,
   isPublishing,
   title,
+  onTitleChange,
   coverImage,
   onCoverChange,
   slug,
@@ -43,24 +46,29 @@ export const PublishReviewModal: React.FC<PublishReviewModalProps> = ({
   onExcerptChange,
   isAlreadyPublished,
   onUnpublish,
+  authorName,
+  authorAvatar,
+  readingTime = 1,
 }) => {
+  const canPublish = title.trim().length >= 3;
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isAlreadyPublished ? 'Pengaturan & Perbarui Artikel' : 'Tinjau & Publikasikan Artikel'}
-      maxWidth="max-w-2xl"
+      title={isAlreadyPublished ? 'Perbarui Detail Artikel' : 'Siap Menerbitkan Karyamu?'}
+      maxWidth="max-w-4xl lg:max-w-5xl"
       footer={
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 w-full">
           {isAlreadyPublished ? (
             <Button
-              variant="danger"
+              variant="outline"
               size="sm"
               iconPrefix={<ArrowCounterClockwise size={15} />}
               onClick={onUnpublish}
               disabled={isPublishing}
             >
-              Kembalikan ke Draf
+              Tarik ke Draf
             </Button>
           ) : (
             <div />
@@ -73,7 +81,7 @@ export const PublishReviewModal: React.FC<PublishReviewModalProps> = ({
               onClick={onClose}
               disabled={isPublishing}
             >
-              Kembali Mengedit
+              Kembali Menulis
             </Button>
             <Button
               variant="primary"
@@ -81,66 +89,43 @@ export const PublishReviewModal: React.FC<PublishReviewModalProps> = ({
               iconPrefix={<PaperPlaneTilt size={16} weight="bold" />}
               onClick={onConfirmPublish}
               isLoading={isPublishing}
+              disabled={!canPublish || isPublishing}
             >
-              {isAlreadyPublished ? 'Simpan Perubahan' : 'Konfirmasi & Terbitkan Sekarang'}
+              {isAlreadyPublished ? 'Simpan Perubahan' : 'Terbitkan Sekarang'}
             </Button>
           </div>
         </div>
       }
     >
-      <div className="flex flex-col gap-6">
-        {/* Banner Info */}
-        <div className="flex items-start gap-3 p-3.5 rounded-xl bg-muted/60 border border-line-subtle text-xs text-ink-muted">
-          <Sparkle size={18} weight="fill" className="text-brand shrink-0 mt-0.5" />
-          <p className="leading-relaxed">
-            Periksa kembali sampul, topik, dan ringkasan sebelum artikel ditampilkan di blog publikmu (
-            <span className="font-mono text-ink font-semibold">avianblog.com/@{username}</span>).
-          </p>
+      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        {/* Left Column: Visual Live Card Preview with Direct Cover Upload (5 Columns) */}
+        <div className="w-full lg:col-span-5 lg:sticky lg:top-0">
+          <PublishCardPreview
+            title={title}
+            excerpt={excerpt}
+            coverImage={coverImage}
+            onCoverChange={onCoverChange}
+            tags={tags}
+            authorName={authorName || username || 'Penulis'}
+            authorAvatar={authorAvatar || null}
+            readingTime={readingTime}
+          />
         </div>
 
-        {/* 1. Article Title Headline */}
-        <div>
-          <span className="text-[11px] font-mono uppercase tracking-wider text-ink-muted font-semibold">
-            Judul Publikasi
-          </span>
-          <h3 className="font-serif text-xl sm:text-2xl font-medium text-ink tracking-tight mt-1">
-            {title || 'Untitled Post'}
-          </h3>
+        {/* Right Column: Structured Metadata Controls (7 Columns) */}
+        <div className="w-full lg:col-span-7">
+          <PublishSettingsForm
+            title={title}
+            onTitleChange={onTitleChange}
+            slug={slug}
+            onSlugChange={onSlugChange}
+            username={username}
+            tags={tags}
+            onTagsChange={onTagsChange}
+            excerpt={excerpt}
+            onExcerptChange={onExcerptChange}
+          />
         </div>
-
-        {/* 2. Cover Image Upload */}
-        <CoverImageUploader
-          coverImage={coverImage}
-          onCoverChange={onCoverChange}
-        />
-
-        {/* 3. Custom Slug URL */}
-        <SlugEditor
-          slug={slug}
-          username={username}
-          onSlugChange={onSlugChange}
-        />
-
-        {/* 4. Tags Selector */}
-        <TagInput
-          label="Topik / Tag Artikel"
-          tags={tags}
-          onChange={onTagsChange}
-          maxTags={5}
-          placeholder="Ketik topik lalu tekan Enter..."
-          helperText="Tambahkan 1 - 5 tag topik untuk mempermudah pembaca menemukan karyamu."
-        />
-
-        {/* 5. Excerpt / Ringkasan Deskripsi */}
-        <Textarea
-          label="Ringkasan / Excerpt SEO"
-          value={excerpt || ''}
-          onChange={(e) => onExcerptChange(e.target.value)}
-          placeholder="Tuliskan 1 - 2 kalimat ringkasan yang menarik minat pembaca..."
-          rows={3}
-          maxLength={160}
-          helperText={`${excerpt?.length || 0}/160 karakter.`}
-        />
       </div>
     </Modal>
   );

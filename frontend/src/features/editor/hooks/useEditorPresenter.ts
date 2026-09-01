@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
@@ -10,50 +9,13 @@ import TextAlign from '@tiptap/extension-text-align';
 import Highlight from '@tiptap/extension-highlight';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
+import { CustomImage } from '../extensions/CustomImage';
 import { usePostDetailQuery, useEditorPublishMutation } from '../api/editorQueries';
 import { postsApi } from '../../dashboard/posts/api/postsApi';
 import { editorApi } from '../api/editorApi';
 import { useAutoSave } from './useAutoSave';
 import { useToast } from '../../../shared/components/ui/Toast/useToast';
 import { useAuthStore } from '../../auth/stores/authStore';
-
-// Extended Custom Image Extension with word-like alignment and size controls
-const CustomImage = Image.extend({
-  addAttributes() {
-    return {
-      ...this.parent?.(),
-      size: {
-        default: 'medium',
-        parseHTML: (element) => {
-          if (element.classList.contains('img-size-small')) return 'small';
-          if (element.classList.contains('img-size-full')) return 'full';
-          return 'medium';
-        },
-        renderHTML: (attributes) => ({
-          class: `img-size-${attributes.size || 'medium'} img-align-${
-            attributes.alignment || 'center'
-          } ${attributes.hasOutline !== false ? 'img-outline' : ''} ${
-            attributes.hasShadow !== false ? 'img-shadow' : ''
-          }`,
-        }),
-      },
-      alignment: {
-        default: 'center',
-        parseHTML: (element) => {
-          if (element.classList.contains('img-align-left')) return 'left';
-          if (element.classList.contains('img-align-right')) return 'right';
-          return 'center';
-        },
-      },
-      hasOutline: {
-        default: true,
-      },
-      hasShadow: {
-        default: true,
-      },
-    };
-  },
-});
 
 export const useEditorPresenter = () => {
   const { id } = useParams<{ id: string }>();

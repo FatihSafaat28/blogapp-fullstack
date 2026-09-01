@@ -520,9 +520,13 @@ Dokumen ini melacak riwayat perubahan, fitur yang telah diselesaikan, dan rencan
    - `frontend/src/features/editor/components/PostSettingsDrawer.tsx`: Laci geser samping kanan menggunakan atom `<Drawer>` yang memadukan cover uploader, slug editor, `<TagInput>` topik multi-chip (maks 5 tag), dan `<Textarea>` excerpt ringkasan SEO (0/160 karakter).
    - Seluruh berkas berukuran `< 100 LOC`.
 
-4. **Verifikasi Build & Arsitektur Monorepo**:
-   - `npm run build` monorepo (backend `tsc` + frontend `vite build`) lulus 100% dengan 0 error kompilasi.
-   - 100% Token CSS Semantik (`var(--color-canvas)`, `var(--color-card)`, dll) dan 100% `@phosphor-icons/react`.
+4. **Task 5.3 Enhancement: Editorial Split-Screen Launchpad (`PublishReviewModal.tsx`)**:
+   - `frontend/src/features/editor/components/PublishCardPreview.tsx`: Komponen kartu pratinjau live feed Substack/Avian style (Cover WebP, Avatar & Nama Penulis, Reading Time, Headline serif Newsreader, Excerpt line-clamp, tag chips, dan live domain canonical link).
+   - `frontend/src/features/editor/components/PublishSettingsForm.tsx`: Komponen formulir metadata (Editable title dengan two-way sync ke kanvas editor, SlugEditor, TagInput maks 5 tag, Excerpt SEO counter 160 karakter, dan CoverImageUploader).
+   - `frontend/src/features/editor/components/PublishReviewModal.tsx`: Layout dialog split 2-kolom diperlebar ke `max-w-5xl` (Preview di kiri, Formulir di kanan), validasi proaktif judul (min. 3 karakter) sebelum publish, dan penyempurnaan copy tombol CTA ("Terbitkan Sekarang" & unpublish netral).
+   - `frontend/src/features/editor/extensions/CustomImage.ts`: Modul ekstensi Tiptap terisolasi (< 40 LOC).
+   - `frontend/src/features/editor/hooks/useEditorPresenter.ts`: Refactoring perampingan kode hingga 291 LOC (mematuhi batas ketat `< 300 LOC`).
+   - Verifikasi build `npm run build` monorepo lulus 100% dengan 0 error.
 
 ---
 

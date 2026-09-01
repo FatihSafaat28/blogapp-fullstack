@@ -169,10 +169,13 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
     - `NodeActionMenu.tsx`: Menu aksi utama blok (Turn Into, Duplicate, Copy, Delete) dengan persistent scroll handling.
     - `TurnIntoSubmenu.tsx`: Submenu melayang cascading di samping kanan untuk migrasi tipe blok.
     - `SlashDropdownMenu.tsx` & `slashMenuItems.tsx`: Slash command palette `/` dengan filter pencarian dan navigasi keyboard penuh.
-- [x] **Task 5.3: Pre-Publish Review Modal & Single Action Workflow**
-  - Views & Primitives:
-    - `Modal.tsx`: Arsitektur dialog scrollable terstandar (`max-h-[88vh]`, `flex flex-col`, sticky header, sticky footer, body `flex-1 overflow-y-auto overscroll-contain`).
-    - `PublishReviewModal.tsx`: Modal pratinjau publikasi terpusat (Judul, CoverImage, SlugEditor, TagInput, Excerpt, dan Revert to Draft) dengan sticky action footer.
+- [x] **Task 5.3: Pre-Publish Review Modal & Single Action Workflow (Editorial Split-Screen Launchpad)**
+  - Views & Primitives (< 150 LOC each):
+    - `Modal.tsx`: Arsitektur dialog scrollable terstandar (`max-h-[88vh]`, `flex flex-col`, `max-w-5xl`, sticky header, sticky footer, body `flex-1 overflow-y-auto overscroll-contain`).
+    - `PublishReviewModal.tsx`: Master modal publikasi split 2-kolom dengan pre-flight validation dan refined action buttons.
+    - `PublishCardPreview.tsx`: Kartu pratinjau live feed Substack/Avian style (Cover WebP, Avatar, Reading Time, Headline serif, Excerpt line-clamp, tag chips, dan canonical link).
+    - `PublishSettingsForm.tsx`: Kontrol formulir metadata (Editable title dengan two-way sync, SlugEditor, TagInput, Excerpt SEO, dan CoverImageUploader).
+    - `CustomImage.ts`: Modul ekstensi Tiptap terisolasi untuk alignment & image resizing (< 40 LOC).
     - `PostSettingsDrawer.tsx`: Sliding drawer alternatif untuk pengaturan metadata artikel.
 
 ---

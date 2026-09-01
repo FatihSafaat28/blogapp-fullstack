@@ -302,11 +302,15 @@ Penerapan aturan tipografi editorial ketat pada `src/styles/index.css`:
    *Catatan*: Margin bawah disetel `0` agar teks penjelas langsung terhubung dekat dengan judul topiknya (*proximity principle*).
 4. **List & To-Do List**: Semua elemen `li`, to-do item, dan paragraf di dalam list (`li p`) dipastikan `margin: 0 !important` sehingga antar butir rapat dan proporsional.
 
-### F. Modal Publikasi & Single Action Header
+### F. Modal Publikasi Editorial Split-Screen & Single Action Header
 * **Satu Tombol Aksi di Pojok Kanan Atas**: Menghilangkan tombol "Pengaturan" yang redundan. Header kini hanya memuat 1 tombol utama: **`Terbitkan Tulisan`** (saat draf) atau **`Perbarui Tulisan`** (saat sudah terbit).
 * **Arsitektur Modal Dialog Scrollable (`Modal.tsx`)**:
-  - Kartu dialog dibatasi `max-h-[88vh]` dengan layout `flex flex-col`.
+  - Kartu dialog dibatasi `max-h-[88vh]` dengan layout `flex flex-col` dan lebar `max-w-5xl`.
   - **Sticky Header**: Judul dialog dan tombol tutup `(X)` terkunci permanen di atas.
   - **Scrollable Body**: Kontainer formulir memiliki `flex-1 overflow-y-auto overscroll-contain` sehingga formulir panjang dapat di-scroll lancar di semua resolusi layar tanpa terdorong keluar layar (*off-screen*).
-  - **Sticky Footer**: Di `PublishReviewModal.tsx`, tombol aksi (*"Kembali Mengedit"*, *"Kembalikan ke Draf"*, *"Konfirmasi & Terbitkan Sekarang"*) ditempatkan pada prop `footer` sehingga selalu tampak di bagian bawah modal.
+  - **Sticky Footer**: Di `PublishReviewModal.tsx`, tombol aksi (*"Kembali Mengedit"*, *"Kembalikan ke Draf"*, *"Terbitkan Sekarang"*) ditempatkan pada prop `footer` sehingga selalu tampak di bagian bawah modal.
+* **Editorial Split-Screen Launchpad (`PublishReviewModal.tsx`)**:
+  - **Kolom Kiri (`PublishCardPreview.tsx`)**: Kartu pratinjau live feed Substack/Avian style (Cover WebP, Avatar, Nama Penulis, Reading Time, Headline serif Newsreader, Excerpt line-clamp, tag chips, dan live domain link).
+  - **Kolom Kanan (`PublishSettingsForm.tsx`)**: Kontrol metadata presisi (Judul artikel dengan two-way sync ke kanvas editor, SlugEditor, TagInput maks 5 tag, Excerpt SEO counter 160 karakter, dan CoverImageUploader).
+  - **Pre-Flight Validation**: Tombol publikasi dinonaktifkan jika judul kurang dari 3 karakter untuk mencegah error 400.
 
