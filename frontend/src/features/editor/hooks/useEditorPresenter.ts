@@ -1,14 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useEditor } from '@tiptap/react';
-import { getEditorExtensions } from '../extensions/editorExtensions';
-import { usePostDetailQuery, useEditorPublishMutation } from '../api/editorQueries';
-import { postsApi } from '../../dashboard/posts/api/postsApi';
-import { editorApi } from '../api/editorApi';
-import { useAutoSave } from './useAutoSave';
-import { useToast } from '../../../shared/components/ui/Toast/useToast';
-import { useAuthStore } from '../../auth/stores/authStore';
-import { AutoSavePayload } from '../types/editor.types';
+import { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useEditor } from "@tiptap/react";
+import { getEditorExtensions } from "../extensions/editorExtensions";
+import {
+  usePostDetailQuery,
+  useEditorPublishMutation,
+} from "../api/editorQueries";
+import { postsApi } from "../../dashboard/posts/api/postsApi";
+import { editorApi } from "../api/editorApi";
+import { useAutoSave } from "./useAutoSave";
+import { useToast } from "../../../shared/components/ui/Toast/useToast";
+import { useAuthStore } from "../../auth/stores/authStore";
+import { AutoSavePayload } from "../types/editor.types";
 
 export const useEditorPresenter = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,8 +19,8 @@ export const useEditorPresenter = () => {
   const { user } = useAuthStore();
   const { showToast } = useToast();
 
-  const [title, setTitle] = useState('');
-  const [slug, setSlug] = useState('');
+  const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState("");
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [excerpt, setExcerpt] = useState<string | null>(null);
@@ -27,23 +30,23 @@ export const useEditorPresenter = () => {
 
   const isInitialHydratedRef = useRef(false);
   const isCreatingNewDraftRef = useRef(false);
-  const contentHtmlRef = useRef<string>('');
+  const contentHtmlRef = useRef<string>("");
   const contentJsonRef = useRef<unknown>(null);
 
   // If landing on /editor/new, automatically initialize draft and replace URL
   useEffect(() => {
-    if (id === 'new' && !isCreatingNewDraftRef.current) {
+    if (id === "new" && !isCreatingNewDraftRef.current) {
       isCreatingNewDraftRef.current = true;
       postsApi
-        .createDraftPost('Untitled Post')
+        .createDraftPost("Untitled Post")
         .then((res) => {
           if (res?.data?.post?.id) {
             navigate(`/editor/${res.data.post.id}`, { replace: true });
           }
         })
         .catch(() => {
-          showToast('Gagal membuat draf baru.', 'error');
-          navigate('/dashboard/posts');
+          showToast("Gagal membuat draf baru.", "error");
+          navigate("/dashboard/posts");
         });
     }
   }, [id, navigate, showToast]);
@@ -57,16 +60,17 @@ export const useEditorPresenter = () => {
   // Tiptap Instance
   const editor = useEditor({
     extensions: getEditorExtensions(),
-    content: '',
+    content: "",
     editorProps: {
       attributes: {
-        class: 'prose-reader focus:outline-none min-h-[400px] text-ink leading-relaxed px-4 sm:px-16 py-4',
+        class:
+          "prose-reader focus:outline-none min-h-[400px] text-ink leading-relaxed px-4 sm:px-16 pt-4 pb-40",
       },
       handlePaste: (_view, event) => {
         const items = event.clipboardData?.items;
         if (items) {
           for (let i = 0; i < items.length; i++) {
-            if (items[i].type.startsWith('image/')) {
+            if (items[i].type.startsWith("image/")) {
               const file = items[i].getAsFile();
               if (file) {
                 event.preventDefault();
@@ -74,12 +78,19 @@ export const useEditorPresenter = () => {
                   .uploadImage(file)
                   .then((res) => {
                     if (res?.data?.url) {
-                      editor?.chain().focus().setImage({ src: res.data.url }).run();
-                      showToast('Gambar berhasil disisipkan!', 'success');
+                      editor
+                        ?.chain()
+                        .focus()
+                        .setImage({ src: res.data.url })
+                        .run();
+                      showToast("Gambar berhasil disisipkan!", "success");
                     }
                   })
                   .catch(() => {
-                    showToast('Gagal mengunggah gambar dari clipboard.', 'error');
+                    showToast(
+                      "Gagal mengunggah gambar dari clipboard.",
+                      "error",
+                    );
                   });
                 return true;
               }
@@ -99,28 +110,38 @@ export const useEditorPresenter = () => {
 
       if (isInitialHydratedRef.current) {
         autoSave.triggerAutoSave(
-          buildCurrentPayload({ contentHtml: html, contentJson: ed.getJSON() })
+          buildCurrentPayload({ contentHtml: html, contentJson: ed.getJSON() }),
         );
       }
     },
   });
 
   // Safe live payload builder
-  const buildCurrentPayload = (overrides?: Partial<AutoSavePayload>): AutoSavePayload => {
+  const buildCurrentPayload = (
+    overrides?: Partial<AutoSavePayload>,
+  ): AutoSavePayload => {
     const liveHtml =
       overrides?.contentHtml ??
-      (editor && !editor.isDestroyed ? editor.getHTML() : contentHtmlRef.current) ??
+      (editor && !editor.isDestroyed
+        ? editor.getHTML()
+        : contentHtmlRef.current) ??
       post?.contentHtml ??
-      '';
+      "";
     const liveJson =
       overrides?.contentJson ??
-      (editor && !editor.isDestroyed ? editor.getJSON() : contentJsonRef.current) ??
+      (editor && !editor.isDestroyed
+        ? editor.getJSON()
+        : contentJsonRef.current) ??
       post?.contentJson;
 
     return {
-      title: overrides?.title !== undefined ? overrides.title : (title || 'Untitled Post'),
-      slug: overrides?.slug !== undefined ? overrides.slug : (slug || undefined),
-      coverImage: overrides?.coverImage !== undefined ? overrides.coverImage : coverImage,
+      title:
+        overrides?.title !== undefined
+          ? overrides.title
+          : title || "Untitled Post",
+      slug: overrides?.slug !== undefined ? overrides.slug : slug || undefined,
+      coverImage:
+        overrides?.coverImage !== undefined ? overrides.coverImage : coverImage,
       contentHtml: liveHtml,
       contentJson: liveJson,
       excerpt: overrides?.excerpt !== undefined ? overrides.excerpt : excerpt,
@@ -136,8 +157,8 @@ export const useEditorPresenter = () => {
   // Initial Data Hydration (Run only once when post and editor ready)
   useEffect(() => {
     if (post && !isInitialHydratedRef.current && editor) {
-      setTitle(post.title || '');
-      setSlug(post.slug || '');
+      setTitle(post.title || "");
+      setSlug(post.slug || "");
       setCoverImage(post.coverImage || null);
       setExcerpt(post.excerpt || null);
       setTags(post.postTags?.map((pt) => pt.tag.name) || []);
@@ -168,7 +189,10 @@ export const useEditorPresenter = () => {
   };
 
   const handleSlugChange = (newSlug: string) => {
-    const sanitized = newSlug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
+    const sanitized = newSlug
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, "-")
+      .replace(/-+/g, "-");
     setSlug(sanitized);
     safeTriggerAutoSave(buildCurrentPayload({ slug: sanitized }));
   };
@@ -215,7 +239,7 @@ export const useEditorPresenter = () => {
 
   const handleExitEditor = async () => {
     await autoSave.flushAutoSave(buildCurrentPayload());
-    navigate('/dashboard/posts');
+    navigate("/dashboard/posts");
   };
 
   const handleInsertImage = async (file: File) => {
@@ -223,10 +247,10 @@ export const useEditorPresenter = () => {
       const res = await editorApi.uploadImage(file);
       if (res?.data?.url && editor) {
         editor.chain().focus().setImage({ src: res.data.url }).run();
-        showToast('Gambar berhasil disisipkan.', 'success');
+        showToast("Gambar berhasil disisipkan.", "success");
       }
     } catch {
-      showToast('Gagal mengunggah gambar.', 'error');
+      showToast("Gagal mengunggah gambar.", "error");
     }
   };
 
