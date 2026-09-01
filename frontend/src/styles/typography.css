@@ -1,0 +1,268 @@
+/* ==========================================================================
+   READER PROSE & ARTICLE TYPOGRAPHY (Substack / Overreacted Style)
+   ========================================================================== */
+
+.prose-reader,
+.tiptap {
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  line-height: 1.85;
+  color: var(--text-ink);
+}
+
+/* First line of document: Always 0 top margin */
+.prose-reader > *:first-child,
+.tiptap > *:first-child {
+  margin-top: 0 !important;
+}
+
+.prose-reader p,
+.tiptap p {
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+}
+
+.prose-reader h1,
+.tiptap h1 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  line-height: 1.25;
+  margin-top: 2rem;
+  margin-bottom: 0;
+  font-weight: 600;
+  color: var(--text-ink);
+  letter-spacing: -0.02em;
+}
+
+.prose-reader h2,
+.tiptap h2 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  line-height: 1.35;
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+  font-weight: 600;
+  color: var(--text-ink);
+  letter-spacing: -0.015em;
+}
+
+.prose-reader h3,
+.tiptap h3 {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  line-height: 1.45;
+  margin-top: 1.15rem;
+  margin-bottom: 0;
+  font-weight: 600;
+  color: var(--text-ink);
+}
+
+.prose-reader ul:not([data-type="taskList"]),
+.tiptap ul:not([data-type="taskList"]) {
+  list-style-type: disc;
+  padding-left: 1.6rem;
+  margin: 0.75rem 0;
+}
+
+.prose-reader ol,
+.tiptap ol {
+  list-style-type: decimal;
+  padding-left: 1.6rem;
+  margin: 0.75rem 0;
+}
+
+/* Zero margins for all paragraphs inside lists */
+.prose-reader ul li p,
+.tiptap ul li p,
+.prose-reader ol li p,
+.tiptap ol li p,
+.prose-reader li p,
+.tiptap li p {
+  margin: 0 !important;
+  line-height: 1.6 !important;
+}
+
+/* Interactive Task List */
+ul[data-type="taskList"],
+ul.task-list-group,
+.prose-reader ul[data-type="taskList"],
+.tiptap ul[data-type="taskList"] {
+  list-style: none !important;
+  padding-left: 0 !important;
+  margin: 1rem 0 !important;
+}
+
+ul[data-type="taskList"] li,
+ul.task-list-group li,
+li.task-list-item,
+li[data-checked],
+.prose-reader li[data-type="taskItem"],
+.tiptap li[data-type="taskItem"] {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  gap: 0.75rem !important;
+  margin: 0 !important;
+  list-style: none !important;
+}
+
+ul[data-type="taskList"] li > label,
+ul.task-list-group li > label,
+li.task-list-item > label,
+li[data-checked] > label {
+  flex: 0 0 auto !important;
+  margin-top: 0.3rem !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+}
+
+ul[data-type="taskList"] li > label input[type="checkbox"],
+ul.task-list-group li > label input[type="checkbox"],
+li.task-list-item input[type="checkbox"],
+li[data-checked] input[type="checkbox"] {
+  cursor: pointer !important;
+  accent-color: var(--text-ink) !important;
+  width: 1.1rem !important;
+  height: 1.1rem !important;
+  border-radius: 4px !important;
+  margin: 0 !important;
+}
+
+ul[data-type="taskList"] li > div,
+ul.task-list-group li > div,
+li.task-list-item > div,
+li[data-checked] > div {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+ul[data-type="taskList"] li > div > p,
+ul.task-list-group li > div > p,
+li.task-list-item > div > p,
+li[data-checked] > div > p {
+  margin: 0 !important;
+  line-height: 1.6 !important;
+}
+
+li[data-checked="true"] > div,
+li.task-list-item[data-checked="true"] > div {
+  text-decoration: line-through !important;
+  opacity: 0.6 !important;
+}
+
+/* Highlight Mark */
+mark {
+  border-radius: 4px;
+  padding: 0.1rem 0.3rem;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.prose-reader li,
+.tiptap li {
+  margin: 0 !important;
+}
+
+.prose-reader strong,
+.tiptap strong {
+  font-weight: 700;
+  color: var(--text-ink);
+}
+
+.prose-reader em,
+.tiptap em {
+  font-style: italic;
+}
+
+.prose-reader blockquote,
+.tiptap blockquote {
+  border-left: 3px solid var(--text-ink);
+  padding: 0.85rem 1.35rem;
+  margin: 1.85rem 0;
+  font-style: italic;
+  color: var(--text-ink-secondary);
+  background: var(--bg-muted);
+  border-radius: 0 8px 8px 0;
+}
+
+.prose-reader pre,
+.tiptap pre {
+  font-family: var(--font-mono);
+  background: var(--bg-muted);
+  border: 1px solid var(--border-line);
+  padding: 1.25rem;
+  border-radius: 10px;
+  overflow-x: auto;
+  margin: 1.75rem 0;
+  font-size: 0.9375rem;
+}
+
+.prose-reader code,
+.tiptap code {
+  font-family: var(--font-mono);
+  background: var(--bg-muted);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.875em;
+  color: var(--text-ink);
+}
+
+.prose-reader pre code,
+.tiptap pre code {
+  background: transparent;
+  padding: 0;
+  color: var(--text-ink);
+}
+
+/* Image styles & alignment presets */
+.prose-reader img,
+.tiptap img {
+  border-radius: 12px;
+  margin: 2rem 0;
+  transition: all 0.2s ease;
+  display: block;
+}
+
+.tiptap img.ProseMirror-selectednode {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 3px;
+}
+
+.img-size-small {
+  max-width: 320px !important;
+}
+
+.img-size-medium {
+  max-width: 600px !important;
+}
+
+.img-size-full {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.img-align-left {
+  margin-right: auto !important;
+  margin-left: 0 !important;
+}
+
+.img-align-center {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.img-align-right {
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+.img-outline {
+  border: 1px solid var(--border-line);
+}
+
+.img-shadow {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
+}

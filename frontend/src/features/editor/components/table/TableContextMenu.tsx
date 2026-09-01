@@ -30,7 +30,6 @@ export const TableContextMenu: React.FC<TableContextMenuProps> = ({
   const [activeSubmenu, setActiveSubmenu] = useState<'insert' | 'delete' | 'align' | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  // Close on outside click or Escape key
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -54,7 +53,6 @@ export const TableContextMenu: React.FC<TableContextMenuProps> = ({
     onClose();
   };
 
-  // Check if flyout should open to the left if near screen right boundary
   const openLeft = position.left > (typeof window !== 'undefined' ? window.innerWidth - 380 : 600);
   const submenuClass = `absolute top-0 ${
     openLeft ? 'right-full mr-1.5' : 'left-full ml-1.5'
@@ -70,10 +68,7 @@ export const TableContextMenu: React.FC<TableContextMenuProps> = ({
       className="absolute z-50 rounded-2xl bg-card border border-line shadow-2xl p-1.5 min-w-[200px] text-xs text-ink animate-scaleIn select-none"
     >
       {/* 1. Insert Submenu */}
-      <div
-        className="relative"
-        onMouseEnter={() => setActiveSubmenu('insert')}
-      >
+      <div className="relative" onMouseEnter={() => setActiveSubmenu('insert')}>
         <button
           type="button"
           className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-muted text-ink transition-colors cursor-pointer text-left"
@@ -125,10 +120,7 @@ export const TableContextMenu: React.FC<TableContextMenuProps> = ({
       </div>
 
       {/* 2. Alignment Submenu */}
-      <div
-        className="relative"
-        onMouseEnter={() => setActiveSubmenu('align')}
-      >
+      <div className="relative" onMouseEnter={() => setActiveSubmenu('align')}>
         <button
           type="button"
           className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-muted text-ink transition-colors cursor-pointer text-left"
@@ -217,11 +209,8 @@ export const TableContextMenu: React.FC<TableContextMenuProps> = ({
 
       <div className="my-1 border-t border-line-subtle" />
 
-      {/* 5. Delete Submenu (Positioned at the very bottom) */}
-      <div
-        className="relative"
-        onMouseEnter={() => setActiveSubmenu('delete')}
-      >
+      {/* 5. Delete Submenu */}
+      <div className="relative" onMouseEnter={() => setActiveSubmenu('delete')}>
         <button
           type="button"
           className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-muted text-danger transition-colors cursor-pointer text-left font-medium"

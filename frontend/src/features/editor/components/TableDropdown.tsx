@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React from 'react';
 import { createPortal } from 'react-dom';
 import { Editor } from '@tiptap/react';
 import {
@@ -9,66 +9,29 @@ import {
   Rows,
   Columns,
 } from '@phosphor-icons/react';
+import {
+  useTableDropdown,
+  MAX_TABLE_ROWS,
+  MAX_TABLE_COLS,
+} from '../hooks/useTableDropdown';
 
 interface TableDropdownProps {
   editor: Editor;
 }
 
-const MAX_ROWS = 8;
-const MAX_COLS = 8;
-
 export const TableDropdown: React.FC<TableDropdownProps> = ({ editor }) => {
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const menuRef = useRef<HTMLDivElement | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [coords, setCoords] = useState<{ top: number; left: number } | null>(null);
-  const [hovered, setHovered] = useState<{ rows: number; cols: number } | null>(null);
-
-  const isInTable = editor.isActive('table');
-
-  const handleToggle = () => {
-    if (!isOpen && triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      setCoords({ top: rect.bottom + 6, left: rect.left });
-      setIsOpen(true);
-      setHovered(null);
-    } else {
-      setIsOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleOutsideClick = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (
-        triggerRef.current &&
-        !triggerRef.current.contains(target) &&
-        menuRef.current &&
-        !menuRef.current.contains(target)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    const handleScrollOrResize = () => setIsOpen(false);
-
-    document.addEventListener('mousedown', handleOutsideClick);
-    window.addEventListener('scroll', handleScrollOrResize, true);
-    window.addEventListener('resize', handleScrollOrResize);
-
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-      window.removeEventListener('scroll', handleScrollOrResize, true);
-      window.removeEventListener('resize', handleScrollOrResize);
-    };
-  }, [isOpen]);
-
-  const insertTable = (rows: number, cols: number) => {
-    editor.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run();
-    setIsOpen(false);
-  };
+  const {
+    triggerRef,
+    menuRef,
+    isOpen,
+    coords,
+    hovered,
+    setHovered,
+    isInTable,
+    handleToggle,
+    insertTable,
+    handleAction,
+  } = useTableDropdown(editor);
 
   return (
     <div className="relative inline-flex items-center">
@@ -96,7 +59,7 @@ export const TableDropdown: React.FC<TableDropdownProps> = ({ editor }) => {
           <div
             ref={menuRef}
             style={{ top: `${coords.top}px`, left: `${coords.left}px` }}
-            className="fixed rounded-2xl bg-card border border-line shadow-2xl p-3 z-50 flex flex-col gap-2 animate-scaleIn text-xs select-none min-w-[200px]"
+            className="absolute rounded-2xl bg-card border border-line shadow-2xl p-3 z-50 flex flex-col gap-2 animate-scaleIn text-xs select-none min-w-[200px]"
           >
             {!isInTable ? (
               <div className="flex flex-col gap-2">
@@ -112,8 +75,8 @@ export const TableDropdown: React.FC<TableDropdownProps> = ({ editor }) => {
                   className="grid grid-cols-8 gap-1 p-1 bg-muted/40 rounded-xl border border-line/60"
                   onMouseLeave={() => setHovered(null)}
                 >
-                  {Array.from({ length: MAX_ROWS }).map((_, rowIndex) =>
-                    Array.from({ length: MAX_COLS }).map((_, colIndex) => {
+                  {Array.from({ length: MAX_TABLE_ROWS }).map((_, rowIndex) =>
+                    Array.from({ length: MAX_TABLE_COLS }).map((_, colIndex) => {
                       const isHighlighted =
                         hovered !== null &&
                         rowIndex < hovered.rows &&
@@ -139,132 +102,81 @@ export const TableDropdown: React.FC<TableDropdownProps> = ({ editor }) => {
                   )}
                 </div>
 
-                <div className="text-[11px] font-mono text-center text-ink-muted pt-1">
-                  {hovered ? (
-                    <span className="text-ink font-semibold">
-                      Klik untuk membuat tabel {hovered.rows} × {hovered.cols}
-                    </span>
-                  ) : (
-                    'Arahkan mouse ke kotak grid'
-                  )}
+                <div className="text-[10px] text-ink-muted text-center pt-0.5">
+                  Klik ukuran kotak yang diinginkan
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col gap-1 w-52">
-                <div className="px-1 py-0.5 text-[11px] font-mono font-semibold uppercase tracking-wider text-ink-muted">
-                  Columns
+              /* In-Table Operations Menu */
+              <div className="flex flex-col gap-1 min-w-[190px]">
+                <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-ink-muted border-b border-line-subtle">
+                  Kelola Tabel
                 </div>
+
+                {/* Columns */}
                 <button
                   type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    editor.chain().focus().addColumnBefore().run();
-                    setIsOpen(false);
-                  }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-muted text-ink transition-colors cursor-pointer text-left"
+                  onClick={() => handleAction(() => editor.chain().focus().addColumnBefore().run())}
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-muted text-ink transition-colors cursor-pointer text-left"
                 >
-                  <Plus size={13} weight="bold" /> Insert column left
+                  <Plus size={13} weight="bold" />
+                  <span>Tambah Kolom Kiri</span>
                 </button>
                 <button
                   type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    editor.chain().focus().addColumnAfter().run();
-                    setIsOpen(false);
-                  }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-muted text-ink transition-colors cursor-pointer text-left"
+                  onClick={() => handleAction(() => editor.chain().focus().addColumnAfter().run())}
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-muted text-ink transition-colors cursor-pointer text-left"
                 >
-                  <Plus size={13} weight="bold" /> Insert column right
+                  <Plus size={13} weight="bold" />
+                  <span>Tambah Kolom Kanan</span>
                 </button>
                 <button
                   type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    editor.chain().focus().deleteColumn().run();
-                    setIsOpen(false);
-                  }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-danger/10 text-danger transition-colors cursor-pointer text-left font-medium"
+                  onClick={() => handleAction(() => editor.chain().focus().deleteColumn().run())}
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-danger/10 text-danger transition-colors cursor-pointer text-left"
                 >
-                  <Trash size={13} weight="bold" /> Delete column
+                  <Columns size={13} weight="bold" />
+                  <span>Hapus Kolom Ini</span>
                 </button>
 
                 <div className="my-1 border-t border-line-subtle" />
 
-                <div className="px-1 py-0.5 text-[11px] font-mono font-semibold uppercase tracking-wider text-ink-muted">
-                  Rows
-                </div>
+                {/* Rows */}
                 <button
                   type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    editor.chain().focus().addRowBefore().run();
-                    setIsOpen(false);
-                  }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-muted text-ink transition-colors cursor-pointer text-left"
+                  onClick={() => handleAction(() => editor.chain().focus().addRowBefore().run())}
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-muted text-ink transition-colors cursor-pointer text-left"
                 >
-                  <Plus size={13} weight="bold" /> Insert row above
+                  <Plus size={13} weight="bold" />
+                  <span>Tambah Baris Atas</span>
                 </button>
                 <button
                   type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    editor.chain().focus().addRowAfter().run();
-                    setIsOpen(false);
-                  }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-muted text-ink transition-colors cursor-pointer text-left"
+                  onClick={() => handleAction(() => editor.chain().focus().addRowAfter().run())}
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-muted text-ink transition-colors cursor-pointer text-left"
                 >
-                  <Plus size={13} weight="bold" /> Insert row below
+                  <Plus size={13} weight="bold" />
+                  <span>Tambah Baris Bawah</span>
                 </button>
                 <button
                   type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    editor.chain().focus().deleteRow().run();
-                    setIsOpen(false);
-                  }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-danger/10 text-danger transition-colors cursor-pointer text-left font-medium"
+                  onClick={() => handleAction(() => editor.chain().focus().deleteRow().run())}
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-danger/10 text-danger transition-colors cursor-pointer text-left"
                 >
-                  <Trash size={13} weight="bold" /> Delete row
+                  <Rows size={13} weight="bold" />
+                  <span>Hapus Baris Ini</span>
                 </button>
 
                 <div className="my-1 border-t border-line-subtle" />
 
+                {/* Delete Table */}
                 <button
                   type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    editor.chain().focus().mergeOrSplit().run();
-                    setIsOpen(false);
-                  }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-muted text-ink transition-colors cursor-pointer text-left"
+                  onClick={() => handleAction(() => editor.chain().focus().deleteTable().run())}
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-danger/10 hover:bg-danger/20 text-danger font-semibold transition-colors cursor-pointer text-left"
                 >
-                  <Columns size={13} /> Merge / Split cells
-                </button>
-
-                <button
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    editor.chain().focus().toggleHeaderRow().run();
-                    setIsOpen(false);
-                  }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-muted text-ink transition-colors cursor-pointer text-left"
-                >
-                  <Rows size={13} /> Toggle header row
-                </button>
-
-                <div className="my-1 border-t border-line-subtle" />
-
-                <button
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    editor.chain().focus().deleteTable().run();
-                    setIsOpen(false);
-                  }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-danger/10 hover:bg-danger/20 text-danger transition-colors cursor-pointer text-left font-semibold"
-                >
-                  <Trash size={13} weight="bold" /> Delete table
+                  <Trash size={13} weight="bold" />
+                  <span>Hapus Tabel</span>
                 </button>
               </div>
             )}

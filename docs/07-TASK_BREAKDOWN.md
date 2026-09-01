@@ -184,10 +184,21 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
     - `TableSelectionOverlay.tsx`: Border highlight ungu dengan corner dot pada cell aktif.
     - `TableDropdown.tsx`: Toolbar matrix selector 8×8 visual grid.
     - `useTableController.ts`: Hook pelacak koordinat getBoundingClientRect().
-- [x] **Task 5.5: Symmetrical 4×2 Drag Context Menu & Smart Block Transformer**
+- [x] **Task 5.5: Symmetrical 4×2 Drag Context Menu, Slash Menu & Document Anchoring Suite**
   - Controllers & Menus (< 280 LOC each):
     - `NodeActionMenu.tsx`: Menu konteks drag handle 2-kolom simetris (4 item Kiri: H1, H2, H3, Code Block vs 4 item Kanan: Bullet List, Numbered List, Task List, Blockquote) dengan smart toggle otomatis kembali ke default Paragraph bila item aktif diklik ulang.
-    - `DragContextMenu.tsx`: Pemisahan hover tracking dengan locked active menu state, penonaktifan overlay untuk node tabel (drag-only), perbaikan transform multi-arah via `.clearNodes()`, dan absolute document scroll anchoring.
+- [x] **Task 5.6: Codebase Architectural Audit & Strict LOC Clean-up (< 300 LOC & MVP Compliance)**
+  - Modular Stylesheets (< 240 LOC each):
+    - `index.css`: Design tokens, dark mode, Tailwind theme, dan CSS imports (~180 LOC).
+    - `typography.css`: Reader prose, headings, lists, blockquote, pre/code blocks (~234 LOC).
+    - `editor.css`: Table styling, selection handles, placeholder, form inputs (~95 LOC).
+  - MVP Presenter Hooks & Pure Views:
+    - `useDragContextMenu.ts` & `DragContextMenu.tsx` (< 95 LOC view).
+    - `useSearchReplace.ts` & `SearchReplacePopover.tsx` (< 170 LOC view).
+    - `useSlashMenu.ts` & `SlashDropdownMenu.tsx` (< 110 LOC view).
+    - `useTableDropdown.ts` & `TableDropdown.tsx` (< 185 LOC view).
+    - `useImageUpload.ts` & `ImageUpload.tsx` (< 90 LOC view).
+  - **Hasil Audit**: 100% file di codebase berukuran `< 280 LOC` dan build `npm run build` monorepo 100% bebas error.
 
 ---
 

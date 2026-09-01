@@ -529,18 +529,29 @@ Dokumen ini melacak riwayat perubahan, fitur yang telah diselesaikan, dan rencan
    - Verifikasi build `npm run build` monorepo lulus 100% dengan 0 error.
 
 5. **Task 5.4: Tiptap Official Table Node UI Controller**:
-   - `frontend/src/features/editor/components/table/TableContextMenu.tsx`: Menu konteks klik kanan sel tabel dalam Bahasa Inggris lengkap dengan submenu Alignment (Left, Center, Right, Top, Middle, Bottom), Insert, Delete, Merge/Split, Toggle Header Row, dan Delete Table di posisi paling bawah dengan danger styling.
+   - `frontend/src/features/editor/components/table/TableContextMenu.tsx`: Menu konteks klik kanan sel tabel dalam Bahasa Inggris lengkap dengan submenu Alignment, Insert, Delete, Merge/Split, Toggle Header Row, dan Delete Table dengan absolute document scroll anchoring (`position: absolute`, `e.clientY + scrollY`).
    - `frontend/src/features/editor/components/table/TableExtendButtons.tsx`: Batang tombol extend `+` di sisi kanan (tambah kolom) dan bawah tabel (tambah baris) ala Tiptap UI demo.
    - `frontend/src/features/editor/components/table/TableSelectionOverlay.tsx`: Border highlight ungu dengan titik corner dot handle di sudut kanan bawah sel aktif.
    - `frontend/src/features/editor/components/TableDropdown.tsx`: Dropdown toolbar atas dengan Interactive 8×8 Visual Grid Matrix Selector dan menu kelola tabel aktif.
    - `frontend/src/features/editor/hooks/useTableController.ts`: Hook pelacak koordinat `getBoundingClientRect()` dan status aktif tabel/sel.
    - `frontend/src/features/editor/extensions/editorExtensions.ts`: Pendaftaran ekstensi modular Table, TableRow, TableHeader, TableCell (resizable: true).
 
-6. **Task 5.5: Symmetrical 4×2 Drag Context Menu & Smart Block Transformer**:
+6. **Task 5.5: Symmetrical 4×2 Drag Context Menu, Slash Menu & Document Anchoring Suite**:
    - `frontend/src/features/editor/components/NodeActionMenu.tsx`: Menu konteks drag handle 2-kolom simetris (4 item Kiri: H1, H2, H3, Code Block vs 4 item Kanan: Bullet List, Numbered List, Task List, Blockquote) dengan smart toggle otomatis kembali ke default Paragraph bila item aktif diklik ulang.
-   - `frontend/src/features/editor/components/DragContextMenu.tsx`: Pemisahan hover tracking dengan locked active menu state, penonaktifan overlay untuk node tabel (drag-only), perbaikan transform multi-arah via `.clearNodes()`, dan absolute document scroll anchoring.
-   - Audit LOC: Seluruh berkas berukuran `< 280 LOC` (mematuhi batas ketat `< 300 LOC`).
-   - Verifikasi build `npm run build` monorepo lulus 100% dengan 0 error.
+   - `frontend/src/features/editor/components/DragContextMenu.tsx`: Pemisahan hover tracking dengan locked active menu state, penonaktifan overlay untuk node tabel (drag-only), perataan vertikal `translate-y-2` pas di tengah header baris tabel, perbaikan transform multi-arah via `.clearNodes()`, dan absolute document scroll anchoring.
+   - `frontend/src/features/editor/components/SlashDropdownMenu.tsx`: Penguncian koordinat dokumen absolut (`cursorCoords.bottom + scrollY + 8`) dengan styling `position: absolute` sehingga menu slash tetap menempel presisi di bawah kursor teks saat layar di-scroll.
+
+7. **Task 5.6: Codebase Architectural Audit & Strict LOC Clean-up (< 300 LOC & MVP Compliance)**:
+   - `frontend/src/styles/index.css` (488 LOC &rarr; 180 LOC): Modularisasi CSS monolitik menjadi sub-modul terstandar `typography.css` (~234 LOC) dan `editor.css` (~95 LOC).
+   - `frontend/src/features/editor/hooks/useDragContextMenu.ts` & `DragContextMenu.tsx` (371 LOC &rarr; 95 LOC): Ekstraksi presenter logic dan ProseMirror command chaining ke custom hook terpisah.
+   - `frontend/src/features/editor/hooks/useSearchReplace.ts` & `SearchReplacePopover.tsx` (298 LOC &rarr; 170 LOC): Ekstraksi regex matching dan search/replace presenter hook.
+   - `frontend/src/features/editor/hooks/useSlashMenu.ts` & `SlashDropdownMenu.tsx` (234 LOC &rarr; 110 LOC): Ekstraksi keyboard selection & transaction listener presenter hook.
+   - `frontend/src/features/editor/hooks/useTableDropdown.ts` & `TableDropdown.tsx` (277 LOC &rarr; 185 LOC): Ekstraksi 8x8 matrix grid hover state dan action handler.
+   - `frontend/src/shared/components/ui/Form/useImageUpload.ts` & `ImageUpload.tsx`: Ekstraksi upload logic ke presenter hook mandiri.
+   - `TableContextMenu.tsx`: Perampingan flyout submenus hingga 242 LOC.
+   - **Audit LOC Result**: 100% file di Frontend & Backend mematuhi batas ketat `< 300 LOC` (file terbesar hanya 277 LOC).
+   - **Build & Type-Check**: `npm run build` monorepo lulus 100% dengan 0 error.
+   - **Graphify**: Sinkronisasi ulang graf (717 nodes, 1,246 edges, 57 communities).
 
 ---
 

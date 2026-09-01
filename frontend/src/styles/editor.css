@@ -1,0 +1,102 @@
+/* ==========================================================================
+   TIPTAP EDITOR, TABLE & FORM EXTENSIONS
+   ========================================================================== */
+
+/* Tiptap Table Styling */
+.tiptap table,
+.prose-reader table {
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  table-layout: fixed;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-line);
+}
+
+.tiptap table td,
+.tiptap table th,
+.prose-reader table td,
+.prose-reader table th {
+  min-width: 1em;
+  padding: 0.625rem 0.875rem;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+  border: 1px solid var(--border-line);
+  text-align: left;
+}
+
+.tiptap table th,
+.prose-reader table th {
+  font-weight: 600;
+  background-color: var(--bg-muted);
+  color: var(--text-ink);
+}
+
+.tiptap table .selectedCell:after,
+.prose-reader table .selectedCell:after {
+  z-index: 2;
+  position: absolute;
+  content: "";
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(99, 102, 241, 0.12);
+  pointer-events: none;
+}
+
+.tiptap table .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: -2px;
+  width: 4px;
+  background-color: var(--brand-primary);
+  pointer-events: none;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+/* Tiptap Placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--text-ink-muted);
+  pointer-events: none;
+  height: 0;
+  opacity: 0.5;
+  font-style: italic;
+}
+
+/* Editorial Form Inputs */
+.input-editorial {
+  width: 100%;
+  height: 2.75rem;
+  background-color: var(--bg-canvas);
+  color: var(--text-ink);
+  border: 1px solid var(--border-line);
+  font-size: 0.875rem;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.input-editorial::placeholder {
+  color: var(--text-ink-muted);
+}
+
+.input-editorial:focus {
+  border-color: var(--text-ink);
+  box-shadow: 0 0 0 1px var(--text-ink);
+}
+
+.input-editorial-error {
+  border-color: var(--status-danger) !important;
+}
+
+.input-editorial-error:focus {
+  box-shadow: 0 0 0 1px var(--status-danger) !important;
+}

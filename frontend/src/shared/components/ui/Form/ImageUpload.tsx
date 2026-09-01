@@ -1,12 +1,13 @@
-import React, { useState, useRef, useId } from 'react';
+import React from 'react';
 import { CloudArrowUp, Trash, CircleNotch } from '@phosphor-icons/react';
-import { apiClient } from '../../../api/apiClient';
+import { useImageUpload } from './useImageUpload';
 
 export interface ImageUploadProps {
   id?: string;
   label?: string;
   value?: string | null;
   onChange: (url: string | null) => void;
+  onUpload?: (file: File) => Promise<string>;
   error?: string;
   helperText?: string;
 }
@@ -16,45 +17,19 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   label,
   value,
   onChange,
+  onUpload,
   error,
   helperText,
 }) => {
-  const generatedId = useId();
-  const inputId = id || generatedId;
-  const [isUploading, setIsUploading] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleUpload = async (file: File) => {
-    if (!file.type.startsWith('image/')) return;
-
-    setIsUploading(true);
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const res = await apiClient.post<{ success: boolean; data: { url: string } }>(
-        '/media/upload',
-        formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
-      );
-      if (res.data.success) {
-        onChange(res.data.data.url);
-      }
-    } catch (err) {
-      console.error('Failed to upload image:', err);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    if (e.dataTransfer.files?.[0]) {
-      handleUpload(e.dataTransfer.files[0]);
-    }
-  };
+  const {
+    inputId,
+    isUploading,
+    isDragging,
+    fileInputRef,
+    setIsDragging,
+    handleUpload,
+    handleDrop,
+  } = useImageUpload({ id, onChange, onUpload });
 
   return (
     <div className="flex flex-col gap-1.5 w-full">
