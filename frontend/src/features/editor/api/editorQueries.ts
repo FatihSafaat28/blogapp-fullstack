@@ -12,7 +12,7 @@ export const usePostDetailQuery = (id?: string) => {
   return useQuery({
     queryKey: editorKeys.detail(id || ''),
     queryFn: () => editorApi.getPostDetail(id!),
-    enabled: !!id && id !== 'new',
+    enabled: !!id,
     staleTime: 1000 * 60 * 5, // 5 menit
   });
 };

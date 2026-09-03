@@ -2,7 +2,6 @@ import React from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import {
   PenNib,
-  NotePencil,
   Article,
   ChartLineUp,
   Gear,
@@ -12,7 +11,7 @@ import {
 } from '@phosphor-icons/react';
 import { useAuthStore } from '../../../features/auth/stores/authStore';
 import { Avatar } from '../ui/Display/Avatar';
-import { Button } from '../ui/Form/Button';
+import { WritePostButton } from '../common/WritePostButton';
 
 export const DashboardSidebar: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   const { user, logout } = useAuthStore();
@@ -61,11 +60,14 @@ export const DashboardSidebar: React.FC<{ onClose?: () => void }> = ({ onClose }
         </div>
 
         {/* Action Button */}
-        <Link to="/editor/new" onClick={onClose}>
-          <Button variant="primary" size="md" fullWidth iconPrefix={<NotePencil size={16} weight="bold" />}>
-            Tulis Artikel Baru
-          </Button>
-        </Link>
+        <WritePostButton
+          size="md"
+          fullWidth
+          iconType="pencil"
+          onBeforeCreate={onClose}
+        >
+          Tulis Cerita Baru
+        </WritePostButton>
 
         {/* Navigation */}
         <nav className="flex flex-col gap-1">

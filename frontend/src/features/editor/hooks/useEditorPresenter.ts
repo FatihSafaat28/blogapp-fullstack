@@ -6,7 +6,6 @@ import {
   usePostDetailQuery,
   useEditorPublishMutation,
 } from "../api/editorQueries";
-import { postsApi } from "../../dashboard/posts/api/postsApi";
 import { editorApi } from "../api/editorApi";
 import { useAutoSave } from "./useAutoSave";
 import { useToast } from "../../../shared/components/ui/Toast/useToast";
@@ -29,30 +28,19 @@ export const useEditorPresenter = () => {
   const [wordCount, setWordCount] = useState(0);
 
   const isInitialHydratedRef = useRef(false);
-  const isCreatingNewDraftRef = useRef(false);
   const contentHtmlRef = useRef<string>("");
   const contentJsonRef = useRef<unknown>(null);
 
-  // If landing on /editor/new, automatically initialize draft and replace URL
-  useEffect(() => {
-    if (id === "new" && !isCreatingNewDraftRef.current) {
-      isCreatingNewDraftRef.current = true;
-      postsApi
-        .createDraftPost("Untitled Post")
-        .then((res) => {
-          if (res?.data?.post?.id) {
-            navigate(`/editor/${res.data.post.id}`, { replace: true });
-          }
-        })
-        .catch(() => {
-          showToast("Gagal membuat draf baru.", "error");
-          navigate("/dashboard/posts");
-        });
-    }
-  }, [id, navigate, showToast]);
-
-  const { data: postData, isLoading: isPostLoading } = usePostDetailQuery(id);
+  const { data: postData, isLoading: isPostLoading, isError } = usePostDetailQuery(id);
   const post = postData?.data?.post;
+
+  // Auto-redirect if post is not found or fails to load (anti-infinite spinner)
+  useEffect(() => {
+    if (isError) {
+      showToast("Artikel tidak ditemukan atau telah dihapus.", "error");
+      navigate("/dashboard/posts", { replace: true });
+    }
+  }, [isError, navigate, showToast]);
 
   const autoSave = useAutoSave({ postId: post?.id });
   const publishMutation = useEditorPublishMutation();

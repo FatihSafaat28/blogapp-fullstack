@@ -1,17 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../auth/stores/authStore';
 import {
   useDashboardPostsQuery,
   useTogglePublishMutation,
   useDeletePostMutation,
-  useCreateDraftMutation,
 } from '../api/postsQueries';
+import { useCreatePost } from './useCreatePost';
 import { PostListItem } from '../types/post.types';
 import { useToast } from '../../../../shared/components/ui/Toast/useToast';
 
 export const usePostListPresenter = () => {
-  const navigate = useNavigate();
   const { user } = useAuthStore();
   const { showToast } = useToast();
 
@@ -46,22 +44,13 @@ export const usePostListPresenter = () => {
 
   const togglePublishMutation = useTogglePublishMutation();
   const deletePostMutation = useDeletePostMutation();
-  const createDraftMutation = useCreateDraftMutation();
+  const { createPost, isCreating: isCreatingDraft } = useCreatePost();
 
   const posts = data?.data?.posts || [];
   const pagination = data?.data?.pagination || { page: 1, limit: 10, total: 0, totalPages: 1 };
 
   // Handlers
-  const handleCreateDraft = async () => {
-    try {
-      const result = await createDraftMutation.mutateAsync('Untitled Post');
-      if (result?.data?.post?.id) {
-        navigate(`/editor/${result.data.post.id}`);
-      }
-    } catch {
-      // Error handled by mutation toast
-    }
-  };
+  const handleCreateDraft = (title?: string) => createPost(title);
 
   const handleTogglePublish = (post: PostListItem) => {
     togglePublishMutation.mutate({
@@ -112,7 +101,7 @@ export const usePostListPresenter = () => {
     setCurrentPage,
     postToDelete,
     isDeleting: deletePostMutation.isPending,
-    isCreatingDraft: createDraftMutation.isPending,
+    isCreatingDraft,
     handleStatusChange,
     handleCreateDraft,
     handleTogglePublish,

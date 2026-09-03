@@ -560,6 +560,32 @@ Dokumen ini melacak riwayat perubahan, fitur yang telah diselesaikan, dan rencan
 
 ---
 
+## 📌 [2026-09-03] - Standardisasi Pembuatan Post Baru via WritePostButton & Hapus Total Rute /editor/new
+
+### ✅ Completed:
+1. **Component-First Architecture `<WritePostButton />` & Presenter Hook `useCreatePost`**:
+   - `frontend/src/features/dashboard/posts/hooks/useCreatePost.ts`: Hook sentral single source of truth dengan perlindungan *triple-layer race condition* (memory lock `useRef`, state React `isCreating`, dan atribut native `disabled`), memanggil `createDraftMutation.mutateAsync()`, dan menavigasi terarah ke `/editor/:id`.
+   - `frontend/src/shared/components/common/WritePostButton.tsx`: Komponen composite reusable yang mengelola sendiri *loading spinner*, event click, ikon Phosphor (`NotePencil` sebagai standar default), dan callback *pre-navigation* (`onBeforeCreate`).
+2. **Hapus Total Rute & Logika `/editor/new`**:
+   - `frontend/src/app/router.tsx`: Menghapus rute `/editor/new`.
+   - `frontend/src/features/editor/hooks/useEditorPresenter.ts`: Menghapus blok efek baris 36–52, menghapus `isCreatingNewDraftRef` yang macet di React StrictMode, menghapus impor mentah `postsApi`, dan menambahkan guard `isError` anti-infinite spinner (otomatis me-redirect jika post 404).
+   - `frontend/src/features/editor/api/editorQueries.ts`: Menyederhanakan `enabled: !!id`.
+3. **Pembersihan Layout & Post List (100% DRY & Valid Semantic HTML)**:
+   - `frontend/src/shared/components/layout/DashboardSidebar.tsx`: Menghapus invalid HTML `<Link to="/editor/new"><Button ...></Link>`, menggantinya dengan `<WritePostButton size="md" fullWidth onBeforeCreate={onClose}>Tulis Cerita Baru</WritePostButton>`.
+   - `frontend/src/shared/components/layout/PublicNavbar.tsx`: Menghapus `<Link to="/editor/new">`, menggantinya dengan `<WritePostButton size="sm">Tulis Cerita</WritePostButton>`.
+   - `frontend/src/features/dashboard/posts/components/PostListHeader.tsx` & `PostListPage.tsx`: Menggunakan `<WritePostButton size="md">Tulis Cerita Baru</WritePostButton>` dan menghapus *prop drilling* `onCreateDraft` serta `isCreating`.
+   - **Penyelarasan UX Copywriting & Iconography**: Menghilangkan istilah kaku *"Artikel"* dan menstandarisasikan frasa menjadi **"Tulis Cerita Baru"** (Sidebar & Header) serta **"Tulis Cerita"** (Navbar compact). Ikon aksi penulisan diseragamkan 100% menggunakan **`NotePencil`** di seluruh tombol.
+   - `frontend/src/features/dashboard/posts/hooks/usePostListPresenter.ts`: Menghapus kode mutasi manual (~15 baris terpangkas).
+4. **Hardening Aksesibilitas (a11y) & SEO**:
+   - `frontend/src/shared/components/ui/Form/Button.tsx`: Menambahkan default prop `type = 'button'`, `aria-busy={isLoading}`, serta WAI-ARIA `role="status"` dan `aria-label="Memuat..."` pada `<CircleNotch>` spinner.
+   - Melindungi *crawl budget* SEO dari rayapan link privat/mutasi.
+5. **Verifikasi Build & LOC**:
+   - Build frontend (`tsc && vite build`) & backend (`tsc`) 100% lulus bebas error.
+   - 100% berkas berukuran `< 280 LOC` (mematuhi batas ketat `< 300 LOC`).
+
+---
+
 ### 🎯 Next Steps:
 - [ ] **Phase 6: Frontend Analytics Dashboard (Ghost Style)**:
    - [ ] **Task 6.1**: Analytics Overview Page (`/dashboard/analytics`) dengan metric cards grid (Total Views, Published Posts, Drafts, Avg Read Time), interactive chart Recharts (7d/30d series), dan daftar Top 5 artikel paling populer.
+

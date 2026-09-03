@@ -1,18 +1,12 @@
 import React from 'react';
-import { Button } from '../../../../shared/components/ui/Form/Button';
-import { PenNib, Sparkle } from '@phosphor-icons/react';
+import { Sparkle } from '@phosphor-icons/react';
+import { WritePostButton } from '../../../../shared/components/common/WritePostButton';
 
 interface PostListHeaderProps {
   totalPosts: number;
-  onCreateDraft: () => void;
-  isCreating: boolean;
 }
 
-export const PostListHeader: React.FC<PostListHeaderProps> = ({
-  totalPosts,
-  onCreateDraft,
-  isCreating,
-}) => {
+export const PostListHeader: React.FC<PostListHeaderProps> = ({ totalPosts }) => {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-line">
       <div>
@@ -29,15 +23,9 @@ export const PostListHeader: React.FC<PostListHeaderProps> = ({
         </p>
       </div>
 
-      <Button
-        variant="primary"
-        size="md"
-        iconPrefix={<PenNib size={17} weight="bold" />}
-        onClick={onCreateDraft}
-        isLoading={isCreating}
-      >
+      <WritePostButton size="md" iconType="pencil">
         Tulis Cerita Baru
-      </Button>
+      </WritePostButton>
     </div>
   );
 };

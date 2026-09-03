@@ -265,7 +265,6 @@ export const AppRouter: React.FC = () => {
           </Route>
 
           {/* Fullscreen Ghost Editor */}
-          <Route path="/editor/new" element={<EditorPage />} />
           <Route path="/editor/:id" element={<EditorPage />} />
         </Route>
       </Routes>

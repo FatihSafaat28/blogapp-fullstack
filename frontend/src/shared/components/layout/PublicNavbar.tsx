@@ -5,6 +5,7 @@ import { Button } from '../ui/Form/Button';
 import { Avatar } from '../ui/Display/Avatar';
 import { Dropdown } from '../ui/Overlay/Dropdown';
 import { ThemeToggle } from '../ui/Theme/ThemeToggle';
+import { WritePostButton } from '../common/WritePostButton';
 import {
   PenNib,
   Compass,
@@ -12,7 +13,6 @@ import {
   User as UserIcon,
   Gear,
   SignOut,
-  NotePencil,
 } from '@phosphor-icons/react';
 
 export const PublicNavbar: React.FC = () => {
@@ -26,7 +26,7 @@ export const PublicNavbar: React.FC = () => {
 
   const userMenuItems = [
     {
-      id: 'dashboard',
+      id: 'studio',
       label: 'Studio Tulisan',
       icon: <SquaresFour size={15} />,
       onClick: () => navigate('/dashboard/posts'),
@@ -68,12 +68,16 @@ export const PublicNavbar: React.FC = () => {
         </div>
 
         {/* Center: True Absolute Center Nav */}
-        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center text-sm font-medium text-ink-secondary">
+        <nav className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2 text-sm font-semibold text-ink-secondary">
+          <Link to="/" className="hover:text-ink transition-colors">
+            Beranda
+          </Link>
           <Link
-            to="/"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-ink hover:bg-muted transition-colors"
+            to="/explore"
+            className="flex items-center gap-1.5 hover:text-ink transition-colors"
           >
-            <Compass size={17} /> Jelajahi Cerita
+            <Compass size={16} />
+            <span>Eksplorasi</span>
           </Link>
         </nav>
 
@@ -83,15 +87,13 @@ export const PublicNavbar: React.FC = () => {
 
           {isAuthenticated && user ? (
             <div className="flex items-center gap-2.5">
-              <Link to="/editor/new" className="hidden sm:inline-block">
-                <Button
-                  variant="primary"
-                  size="sm"
-                  iconPrefix={<NotePencil size={14} weight="bold" />}
-                >
-                  Tulis Cerita
-                </Button>
-              </Link>
+              <WritePostButton
+                size="sm"
+                iconType="pencil"
+                className="hidden sm:inline-flex"
+              >
+                Tulis Cerita
+              </WritePostButton>
 
               <Dropdown
                 trigger={

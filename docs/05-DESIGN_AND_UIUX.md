@@ -124,6 +124,7 @@ Seluruh styling frontend dikontrol secara terpusat oleh **`src/styles/index.css`
 | **Feedback**| `<ReadingProgressBar>` | `shared/components/ui/Feedback/ReadingProgressBar` | Bar indikator progres baca tipis 3px di bagian paling atas layar artikel. |
 | **Theme**   | `<ThemeToggle>` | `shared/components/ui/Theme/ThemeToggle` | Tombol switch instan Light Mode ↔ Dark Mode. |
 | **Toast**   | `useToast()` / `<Toast>` | `shared/components/ui/Toast` | Hook & komponen notifikasi pop-up global (*success, error, warning, info*). |
+| **Composite**| `<WritePostButton>` | `shared/components/common/WritePostButton` | Tombol pembuat draf baru terstandar dengan ikon `NotePencil`, debounce memory lock, loading spinner otomatis, dan navigasi terarah ke `/editor/:id`. |
 
 ## 5. 🏛️ Standar Desain Resmi & Anti-Slop Guidelines (Wajib Dipatuhi)
 
@@ -250,7 +251,7 @@ Untuk memastikan platform dapat diakses oleh semua kalangan (termasuk pengguna s
 
 ## 8. ✍️ Studio Editor & Tipografi Tiptap (Phase 5 Deep-Dive)
 
-Dokumentasi teknis untuk arsitektur WYSIWYG editor berbasis **Tiptap (ProseMirror)** pada fitur studio kepenulisan (`/editor/new` & `/editor/:id`).
+Dokumentasi teknis untuk arsitektur WYSIWYG editor berbasis **Tiptap (ProseMirror)** pada fitur studio kepenulisan (`/editor/:id`). Pembuatan draf dilakukan melalui komponen sentral `<WritePostButton>` yang mengeksekusi mutasi `POST /api/posts/draft` dan langsung menavigasi ke editor workspace.
 
 ### A. Katalog Ekstensi Tiptap Resmi yang Digunakan
 

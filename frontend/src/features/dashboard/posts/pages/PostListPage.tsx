@@ -22,7 +22,6 @@ export const PostListPage: React.FC = () => {
     setCurrentPage,
     postToDelete,
     isDeleting,
-    isCreatingDraft,
     handleStatusChange,
     handleCreateDraft,
     handleTogglePublish,
@@ -35,11 +34,7 @@ export const PostListPage: React.FC = () => {
   return (
     <div className="flex flex-col gap-6 max-w-5xl mx-auto pb-16 animate-fadeIn">
       {/* 1. Page Header */}
-      <PostListHeader
-        totalPosts={pagination.total}
-        onCreateDraft={handleCreateDraft}
-        isCreating={isCreatingDraft}
-      />
+      <PostListHeader totalPosts={pagination.total} />
 
       {/* 2. Filter Tabs & Search Bar */}
       <PostFilterBar

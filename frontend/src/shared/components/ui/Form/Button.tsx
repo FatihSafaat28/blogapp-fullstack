@@ -20,6 +20,7 @@ export const Button: React.FC<ButtonProps> = ({
   iconSuffix,
   disabled,
   className = '',
+  type = 'button',
   ...props
 }) => {
   const baseStyles =
@@ -46,6 +47,8 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
+      type={type}
+      aria-busy={isLoading}
       className={`${baseStyles} ${sizeStyles} ${variantStyles} ${
         fullWidth ? 'w-full' : ''
       } ${className}`}
@@ -53,7 +56,12 @@ export const Button: React.FC<ButtonProps> = ({
       {...props}
     >
       {isLoading ? (
-        <CircleNotch size={size === 'sm' ? 14 : size === 'lg' ? 18 : 16} className="animate-spin" />
+        <CircleNotch
+          size={size === 'sm' ? 14 : size === 'lg' ? 18 : 16}
+          className="animate-spin"
+          role="status"
+          aria-label="Memuat..."
+        />
       ) : (
         iconPrefix
       )}

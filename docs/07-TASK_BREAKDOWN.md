@@ -150,7 +150,7 @@ Dokumen ini memecah seluruh pengerjaan proyek **Multi-User PERN Blog Platform** 
     - `PostFilterBar.tsx`: Tab segmented pill `All`, `Published`, `Draft` dan search input.
     - `PostItemCard.tsx`: Tampilan kartu artikel dengan cover thumbnail, status badge, reading time, view count, dan dropdown menu aksi `[ ••• ]`.
     - `DeletePostModal.tsx`: Konfirmasi dialog hapus permanen.
-- [x] **Task 5.2: Ghost-Style Fullscreen Editor Studio & Advanced Tiptap Engine (`/editor/new` & `/editor/:id`)**
+- [x] **Task 5.2: Ghost-Style Fullscreen Editor Studio & Advanced Tiptap Engine (`/editor/:id` via `<WritePostButton />`)**
   - Model: `types/editor.types.ts`, `api/editorApi.ts`, `api/editorQueries.ts`.
   - Presenter: `useEditorPresenter.ts` & `useAutoSave.ts` (Debounced 2s auto-save, status pill, dirty tracking, `Ctrl+S` instant save, emergency localStorage snapshot, headline auto-resize).
   - Ekstensi Tiptap Suite (12 Packages): `@tiptap/react`, `@tiptap/pm`, `@tiptap/starter-kit`, `@tiptap/extension-underline`, `@tiptap/extension-highlight`, `@tiptap/extension-text-align`, `@tiptap/extension-link`, `@tiptap/extension-image`, `@tiptap/extension-task-list`, `@tiptap/extension-task-item`, `@tiptap/extension-drag-handle-react`, `@tiptap/extension-placeholder`.
