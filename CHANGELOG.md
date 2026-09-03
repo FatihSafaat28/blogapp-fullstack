@@ -585,6 +585,18 @@ Dokumen ini melacak riwayat perubahan, fitur yang telah diselesaikan, dan rencan
 
 ---
 
+## 🐛 [2026-09-03] - Fix Cache Poisoning & Race Condition Hidrasi Editor Draf
+- **Completed**:
+  - `frontend/src/features/editor/api/editorQueries.ts`: Mengubah `staleTime: 0`, `gcTime: 0`, dan `refetchOnMount: 'always'` pada `usePostDetailQuery` agar workspace editor selalu meminta data paling segar dari database PostgreSQL dan tidak lagi terjebak menyajikan snapshot draf kosong dari memori cache.
+  - `frontend/src/features/editor/hooks/useEditorPresenter.ts`:
+    - Menghapus manual `editor?.destroy()` di dalam `useEffect([editor])` yang berpotensi mematikan instance Tiptap saat re-render/remount.
+    - Menambahkan argumen `false` (`emitUpdate: false`) pada `editor.commands.setContent(content, false)` saat hidrasi awal data agar tidak memicu auto-save prematur.
+    - Menambahkan *anti-wipeout guard* pada `buildCurrentPayload` dan `handleExitEditor` agar tidak pernah menimpa database jika editor belum selesai terhidrasi.
+    - Menambahkan reset `isInitialHydratedRef.current = false` ketika berpindah ID draf.
+  - **Verifikasi Build & LOC**: Build frontend (`tsc && vite build`) 100% lulus bebas error (11.4s), ukuran file 283 LOC (mematuhi batas ketat `< 300 LOC`).
+
+---
+
 ### 🎯 Next Steps:
 - [ ] **Phase 6: Frontend Analytics Dashboard (Ghost Style)**:
    - [ ] **Task 6.1**: Analytics Overview Page (`/dashboard/analytics`) dengan metric cards grid (Total Views, Published Posts, Drafts, Avg Read Time), interactive chart Recharts (7d/30d series), dan daftar Top 5 artikel paling populer.

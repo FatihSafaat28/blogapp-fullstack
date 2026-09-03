@@ -110,11 +110,12 @@ export const useEditorPresenter = () => {
   ): AutoSavePayload => {
     const liveHtml =
       overrides?.contentHtml ??
-      (editor && !editor.isDestroyed
-        ? editor.getHTML()
-        : contentHtmlRef.current) ??
-      post?.contentHtml ??
-      "";
+      (!isInitialHydratedRef.current
+        ? (post?.contentHtml || contentHtmlRef.current || "")
+        : (editor && !editor.isDestroyed
+            ? editor.getHTML()
+            : contentHtmlRef.current || post?.contentHtml || ""));
+
     const liveJson =
       overrides?.contentJson ??
       (editor && !editor.isDestroyed
@@ -142,19 +143,26 @@ export const useEditorPresenter = () => {
     autoSave.triggerAutoSave(payload);
   };
 
+  // Reset status hidrasi jika berpindah artikel
+  useEffect(() => {
+    isInitialHydratedRef.current = false;
+  }, [id]);
+
   // Initial Data Hydration (Run only once when post and editor ready)
   useEffect(() => {
-    if (post && !isInitialHydratedRef.current && editor) {
+    if (post && !isInitialHydratedRef.current && editor && !editor.isDestroyed) {
       setTitle(post.title || "");
       setSlug(post.slug || "");
       setCoverImage(post.coverImage || null);
       setExcerpt(post.excerpt || null);
       setTags(post.postTags?.map((pt) => pt.tag.name) || []);
 
-      if (post.contentHtml) {
-        contentHtmlRef.current = post.contentHtml;
+      const contentToSet = post.contentHtml || "";
+      if (contentToSet) {
+        contentHtmlRef.current = contentToSet;
         contentJsonRef.current = post.contentJson;
-        editor.commands.setContent(post.contentHtml);
+        // setContent dengan emitUpdate: false agar tidak memicu auto-save saat hidrasi
+        editor.commands.setContent(contentToSet, false);
         const text = editor.getText().trim();
         setWordCount(text ? text.split(/\s+/).length : 0);
       }
@@ -162,13 +170,6 @@ export const useEditorPresenter = () => {
       isInitialHydratedRef.current = true;
     }
   }, [post, editor]);
-
-  // Clean unmount
-  useEffect(() => {
-    return () => {
-      editor?.destroy();
-    };
-  }, [editor]);
 
   // Handlers
   const handleTitleChange = (newTitle: string) => {
@@ -226,7 +227,9 @@ export const useEditorPresenter = () => {
   };
 
   const handleExitEditor = async () => {
-    await autoSave.flushAutoSave(buildCurrentPayload());
+    if (isInitialHydratedRef.current) {
+      await autoSave.flushAutoSave(buildCurrentPayload());
+    }
     navigate("/dashboard/posts");
   };
 

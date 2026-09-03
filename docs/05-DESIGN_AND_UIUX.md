@@ -315,3 +315,14 @@ Penerapan aturan tipografi editorial ketat pada `src/styles/index.css`:
   - **Kolom Kanan (`PublishSettingsForm.tsx`)**: Kontrol metadata presisi (Judul artikel dengan two-way sync ke kanvas editor, SlugEditor, TagInput maks 5 tag, Excerpt SEO counter 160 karakter, dan CoverImageUploader).
   - **Pre-Flight Validation**: Tombol publikasi dinonaktifkan jika judul kurang dari 3 karakter untuk mencegah error 400.
 
+### G. Arsitektur Caching & Hidrasi Anti-Wipeout Studio Editor
+Untuk memastikan teks draf tidak pernah hilang atau tertimpa string kosong saat bernavigasi dari dashboard:
+* **Fresh Query Policy (`staleTime: 0`, `gcTime: 0`)**: `usePostDetailQuery` selalu melakukan fetch langsung ke endpoint `/api/posts/dashboard/:id` saat kanvas editor dibuka, mencegah TanStack Query mengembalikan snapshot draf kosong dari memori RAM.
+* **Instant Cache Sync**: Mutasi `useAutoSaveMutation` dan `useEditorPublishMutation` langsung menyinkronkan data cache via `queryClient.setQueryData(editorKeys.detail(id), data)` pasca respons 200 OK dari backend.
+* **Senyap Saat Hidrasi (`emitUpdate: false`)**: Pengisian data awal ke instance Tiptap menggunakan `editor.commands.setContent(content, false)` agar proses memuat konten dari database tidak memicu event `onUpdate` auto-save secara tergesa-gesa.
+* **Anti-Wipeout Guard**:
+  - `buildCurrentPayload` menolak menghasilkan konten kosong jika status hidrasi belum tuntas (`!isInitialHydratedRef.current`).
+  - Tombol keluar (`handleExitEditor`) hanya mem-flush draf jika editor sudah terhidrasi secara penuh.
+* **Lifecycle Bersih**: Hook `useEditor` dari `@tiptap/react` mengelola siklus hidup destroy secara otomatis. Dilarang memanggil `editor?.destroy()` manual di dalam `useEffect` luar agar instance editor tidak mati saat terjadi re-render komponen.
+
+

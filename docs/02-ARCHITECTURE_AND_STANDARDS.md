@@ -155,3 +155,26 @@ Untuk menjaga agar codebase tetap modular, type-safe, dan bebas dari *cyclic dep
 * **Topological Code Exploration**: Memanfaatkan `graph.json` dan `graphify query` untuk navigasi kode secara presisi antar sesi.
 * **Audit Trail**: Memanfaatkan laporan audit `graphify-out/GRAPH_REPORT.md` untuk memantau modularitas modul Backend dan Frontend.
 * **Automatic Graph Sync**: Melakukan update incremental (`/graphify . --update`) setelah menyelesaikan setiap fitur utama.
+
+---
+
+## 7. 🔄 Standar Caching & State Synchronization (TanStack Query Policy)
+
+Untuk mencegah bug desinkronisasi data, *stale cache poisoning*, dan penimpaan data draf kosong (*accidental data wipeout*):
+
+### A. Segmentasi Cache Policy (Read vs Write Environments):
+1. **Read-Heavy Public Pages (`/`, `/explore`, `/@:username`, `/p/:slug`)**:
+   - Menerapkan cache performa tinggi dengan `staleTime: 1000 * 60 * 5` (5 menit) dan `gcTime: 1000 * 60 * 30` (30 menit).
+   - Tujuannya menjaga pengalaman pembaca instan (*snappy*) dan hemat panggilan jaringan.
+2. **Write-Heavy Authoring Workspaces (`/editor/:id`)**:
+   - **WAJIB** menerapkan `staleTime: 0`, `gcTime: 0`, dan `refetchOnMount: 'always'`.
+   - Workspace editor dilarang keras menyajikan snapshot draf usang dari memori RAM browser. Editor wajib selalu mengambil data *Single Source of Truth* paling segar langsung dari database PostgreSQL.
+
+### B. Aturan Mutasi & Cache Sync:
+* Setiap mutasi yang memperbarui data inti (seperti `useAutoSaveMutation` atau `useEditorPublishMutation`) **wajib secara instan menyinkronkan cache query terkait** menggunakan `queryClient.setQueryData(key, data)` serta menginvalidsi query turunan (`postsKeys.all`).
+* Dilarang hanya menginvalidsi query daftar tanpa menyinkronkan query detail yang sedang aktif.
+
+### C. Anti-Wipeout Guard pada Editor:
+* Auto-save dilarang memicu mutasi atau mengeksekusi *flush* jika status hidrasi editor belum tuntas (`!isInitialHydratedRef.current`).
+* Pengisian konten awal Tiptap editor wajib menggunakan `editor.commands.setContent(content, false)` dengan flag `emitUpdate: false` agar pemuatan data database tidak memicu auto-save berulang.
+

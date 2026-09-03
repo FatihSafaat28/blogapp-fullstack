@@ -13,7 +13,9 @@ export const usePostDetailQuery = (id?: string) => {
     queryKey: editorKeys.detail(id || ''),
     queryFn: () => editorApi.getPostDetail(id!),
     enabled: !!id,
-    staleTime: 1000 * 60 * 5, // 5 menit
+    staleTime: 0, // Selalu ambil data terbaru dari database setiap kali membuka editor
+    gcTime: 0, // Jangan simpan snapshot usang di memori saat editor ditutup
+    refetchOnMount: 'always',
   });
 };
 
