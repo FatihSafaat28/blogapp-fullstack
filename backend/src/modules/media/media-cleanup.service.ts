@@ -118,7 +118,7 @@ export class MediaCleanupService {
         if (result.totalDeleted > 0) {
           const sizeKb = (result.bytesFreed / 1024).toFixed(1);
           console.log(
-            `[Media Cleanup] 🧹 Pembersihan otomatis: ${result.totalDeleted} file yatim dihapus (${sizeKb} KB dibebaskan).`
+            `[Media Cleanup] 🧹 Pembersihan otomatis: ${result.totalDeleted} file   (${sizeKb} KB dibebaskan).`
           );
         }
       } catch {
@@ -133,7 +133,7 @@ export class MediaCleanupService {
         if (result.totalDeleted > 0) {
           const sizeKb = (result.bytesFreed / 1024).toFixed(1);
           console.log(
-            `[Media Cleanup] 🧹 Pembersihan berkala: ${result.totalDeleted} file yatim dihapus (${sizeKb} KB dibebaskan).`
+            `[Media Cleanup] 🧹 Pembersihan berkala: ${result.totalDeleted} file   (${sizeKb} KB dibebaskan).`
           );
         }
       } catch {

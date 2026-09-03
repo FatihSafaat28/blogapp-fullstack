@@ -10,7 +10,7 @@ async function main() {
     console.log('----------------------------------------------------');
     console.log(`📁 Total File di Folder Uploads : ${result.totalScanned}`);
     console.log(`✅ Total File Aktif di Database : ${result.totalActive}`);
-    console.log(`🗑️  Total File Yatim Dihapus     : ${result.totalDeleted}`);
+    console.log(`🗑️  Total File       : ${result.totalDeleted}`);
     console.log(`💾 Ruang Disk yang Dibebaskan   : ${(result.bytesFreed / 1024).toFixed(1)} KB`);
 
     if (result.deletedFiles.length > 0) {
